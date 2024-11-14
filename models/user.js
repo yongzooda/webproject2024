@@ -13,12 +13,4 @@ const userSchema = new mongoose.Schema({
   interests: [String],
 });
 
-// 사용자 저장 전에 비밀번호 해싱
-userSchema.pre('save', async function (next) {
-  if (this.isModified('password')) {
-    this.password = await bcrypt.hash(this.password, 10);
-  }
-  next();
-});
-
 module.exports = mongoose.model('User', userSchema);

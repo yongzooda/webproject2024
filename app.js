@@ -2,8 +2,9 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const connectDB = require('./config/db');
-const loginRoutes = require('./routes/login'); // 로그인 라우트 불러오기
-const registerRoutes = require('./routes/register'); // 회원가입 라우트 불러오기
+const loginRoutes = require('./routes/login');
+const registerRoutes = require('./routes/register');
+const homeRoutes = require('./routes/home');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -25,13 +26,9 @@ app.get('/', (req, res) => {
 });
 
 // 로그인 및 회원가입 라우트 사용
-app.use('/', require('./routes/login'));
-app.use('/', require('./routes/register'));
-
-// 홈 페이지 라우팅
-app.get('/home', (req, res) => {
-  res.render('index', { title: 'Home' });
-});
+app.use('/', loginRoutes);
+app.use('/register', registerRoutes);
+app.use('/home', homeRoutes);
 
 // 서버 시작
 app.listen(PORT, () => {
