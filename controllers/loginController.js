@@ -18,7 +18,6 @@ exports.handleLogin = async (req, res) => {
   try {
     // 사용자 검색
     const user = await User.findOne({ username });
-    console.log('찾은 사용자:', user); // 디버깅용 로그
 
     if (!user) {
       console.log('사용자를 찾을 수 없습니다.');
@@ -27,9 +26,6 @@ exports.handleLogin = async (req, res) => {
 
     // 비밀번호 검증
     const isMatch = await bcrypt.compare(password, user.password); // 해싱된 비밀번호와 비교
-    console.log(password);
-    console.log(user.password);
-    console.log(isMatch);
 
     if (!isMatch) {
       console.log('사용자를 찾을 수 없습니다.');

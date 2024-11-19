@@ -1,4 +1,5 @@
 const express = require('express');
+const multer = require('multer'); // multer 가져오기
 const path = require('path');
 const bodyParser = require('body-parser');
 const connectDB = require('./config/db');
@@ -18,7 +19,6 @@ app.set('views', path.join(__dirname, 'views'));
 
 // 정적 파일 경로 설정
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(bodyParser.urlencoded({ extended: true }));
 
 // 기본 홈페이지 진입 시 로그인 페이지로 리다이렉트
 app.get('/', (req, res) => {
@@ -29,6 +29,10 @@ app.get('/', (req, res) => {
 app.use('/', loginRoutes);
 app.use('/register', registerRoutes);
 app.use('/home', homeRoutes);
+
+// Body-parser 설정 (POST 요청 처리)
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 // 서버 시작
 app.listen(PORT, () => {

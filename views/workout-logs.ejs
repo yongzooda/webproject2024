@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Workout Logs</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+
+      header {
+        background-color: #333;
+        color: white;
+        padding: 1em;
+        text-align: center;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 2em auto;
+        padding: 1em;
+        text-align: center;
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      li {
+        margin: 1em 0;
+        padding: 1em;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+
+      a.add-log-btn {
+        display: inline-block;
+        margin: 1em auto;
+        padding: 0.8em 1.5em;
+        background-color: #4caf50;
+        color: white;
+        text-decoration: none;
+        font-size: 1rem;
+        border-radius: 5px;
+      }
+
+      a.add-log-btn:hover {
+        background-color: #45a049;
+      }
+
+      img {
+        margin-top: 1em;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>All Workout Logs</h1>
+    </header>
+    <div class="container">
+      <% if (logs.length === 0) { %>
+      <p>No workout logs found.</p>
+      <% } else { %>
+      <ul>
+        <% logs.forEach((log) => { %>
+        <li>
+          <strong><%= log.title %></strong> by <%= log.username %>
+          <p>
+            Exercise: <%= log.exercise %>, Duration: <%= log.duration %> minutes
+          </p>
+          <p>Date: <%= log.date.toDateString() %></p>
+          <p>Description: <%= log.description %></p>
+          <% if (log.image) { %>
+          <img
+            src="/uploads/<%= log.image %>"
+            alt="Workout Image"
+            width="200"
+          />
+          <% } %>
+          <form action="/home/workout-log/<%= log._id %>/delete" method="POST">
+            <button type="submit">Delete</button>
+          </form>
+        </li>
+        <% }); %>
+      </ul>
+      <% } %>
+
+      <!-- Add Log Button -->
+      <a href="/home/workout-log/new" class="add-log-btn"
+        >Add New Workout Log</a
+      >
+    </div>
+  </body>
+</html>

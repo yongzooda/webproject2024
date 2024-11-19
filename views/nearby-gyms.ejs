@@ -44,6 +44,11 @@
         color: #4ca1af;
         margin-bottom: 1rem;
       }
+      #map {
+        width: 100%;
+        height: 400px;
+        margin: 2rem auto;
+      }
     </style>
   </head>
   <body>
@@ -55,40 +60,95 @@
       <div id="gym-list">
         <!-- 헬스장 목록이 여기에 표시될 예정 -->
       </div>
+      <div id="map"></div>
+      <!-- 지도 표시를 위한 DIV -->
     </main>
 
-    <script>
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((position) => {
-          const { latitude, longitude } = position.coords;
-          fetch(`/nearby-gyms?lat=${latitude}&lng=${longitude}`)
-            .then((response) => response.json())
-            .then((data) => displayGyms(data))
-            .catch((error) => console.error(error));
-        });
-      } else {
-        alert('Geolocation is not supported by this browser.');
-      }
+    <!-- Google Maps API 로드 -->
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap"
+      async
+      defer
+    ></script>
 
-      function displayGyms(gyms) {
-        const gymList = document.getElementById('gym-list');
-        if (gyms.length === 0) {
-          gymList.innerHTML = '<p>No gyms found nearby.</p>';
-          return;
+    <!-- 사용자 위치 가져오기 및 서버 요청 -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        console.log('DOM fully loaded and parsed.');
+
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const latitude = position.coords.latitude;
+              const longitude = position.coords.longitude;
+
+              // 요청 URL 생성
+              const requestUrl = `/home/api/nearby-gyms?lat=${latitude}&lng=${longitude}`;
+              console.log('Request URL:', requestUrl); // 디버깅용 URL 출력
+
+              // 서버로 요청 보내기
+              fetch(requestUrl)
+                .then((response) => {
+                  if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                  }
+                  return response.json();
+                })
+                .then((data) => {
+                  console.log('Received data from server:', data); // 데이터 확인
+                  displayGyms(data);
+                })
+                .catch((error) => console.error('Fetch Error:', error));
+            },
+            (error) => {
+              console.error('Geolocation error:', error);
+              alert(`Error accessing location: ${error.message}`);
+            }
+          );
+        } else {
+          alert('Geolocation is not supported by this browser.');
         }
 
-        gymList.innerHTML = gyms
-          .map(
-            (gym) => `
-            <div class="gym-card">
-              <i class="fas fa-dumbbell card-icon"></i>
-              <h2>${gym.name}</h2>
-              <p>${gym.vicinity}</p>
-              ${gym.rating ? `<p>Rating: ${gym.rating} ⭐</p>` : ''}
-            </div>
-          `
-          )
-          .join('');
+        // 헬스장 목록 표시 함수
+        function displayGyms(gyms) {
+          const gymList = document.getElementById('gym-list');
+          if (gyms.length === 0) {
+            gymList.innerHTML = '<p>No gyms found nearby.</p>';
+            return;
+          }
+
+          gymList.innerHTML = gyms
+            .map(
+              (gym) => `
+                  <div class="gym-card">
+                    <i class="fas fa-dumbbell card-icon"></i>
+                    <h2>${gym.name}</h2>
+                    <p>${gym.vicinity}</p>
+                    ${gym.rating ? `<p>Rating: ${gym.rating} ⭐</p>` : ''}
+                  </div>
+                `
+            )
+            .join('');
+        }
+      });
+    </script>
+
+    <!-- 지도 초기화 함수 -->
+    <script>
+      function initMap() {
+        const userLocation = { lat: 37.7749, lng: -122.4194 }; // 기본값
+
+        const map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 12,
+          center: userLocation,
+        });
+
+        new google.maps.Marker({
+          position: userLocation,
+          map: map,
+        });
+
+        console.log('Default map initialized with:', userLocation);
       }
     </script>
   </body>

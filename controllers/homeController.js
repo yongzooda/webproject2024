@@ -5,9 +5,9 @@ exports.getMenuPage = (req, res) => {
   res.render('home');
 };
 
-// 운동 일지 페이지 렌더링
-exports.getWorkoutLog = (req, res) => {
-  res.render('workout-log');
+// nearby-gyms.ejs 템플릿 렌더링
+exports.getNearbyGymsPage = (req, res) => {
+  res.render('nearby-gyms'); // EJS 파일 이름
 };
 
 // 식단 일지 페이지 렌더링
