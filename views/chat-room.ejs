@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat Room</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+      #chat-box {
+        width: 80%;
+        height: 70%;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        padding: 10px;
+        background: white;
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .message {
+        margin: 5px 0;
+        padding: 10px;
+        border-radius: 10px;
+        max-width: 60%;
+      }
+
+      .message.user {
+        align-self: flex-end;
+        background-color: #007bff;
+        color: white;
+      }
+
+      .message.admin {
+        align-self: flex-start;
+        background-color: #f1f1f1;
+        color: black;
+      }
+
+      form {
+        display: flex;
+        width: 80%;
+      }
+
+      input[type='text'] {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+
+      button {
+        padding: 10px 20px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Chat with Admin</h1>
+    </header>
+    <main>
+      <div id="chat-box">
+        <% if (chatRoom && chatRoom.messages.length > 0) { %> <%
+        chatRoom.messages.forEach((msg) => { %>
+        <p>
+          <strong><%= msg.sender === 'admin' ? 'Admin' : msg.sender %>:</strong>
+          <%= msg.message %>
+        </p>
+        <% }); %> <% } else { %>
+        <p>No messages yet.</p>
+        <% } %>
+      </div>
+      <form id="chat-form">
+        <input
+          type="text"
+          id="message-input"
+          placeholder="Type your message..."
+          required
+        />
+        <button type="submit">Send</button>
+      </form>
+    </main>
+
+    <script>
+      const socket = io();
+      const roomId = '<%= chatRoom.roomId %>';
+      const role = '<%= user && user.role === "admin" ? "admin" : "user" %>';
+
+      // 방에 참여
+      socket.emit('join', { roomId, role });
+
+      // 메시지 송신
+      document.getElementById('chat-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const message = document.getElementById('message-input').value;
+        socket.emit('chat message', { roomId, sender: role, message });
+        document.getElementById('message-input').value = '';
+      });
+
+      // 메시지 수신
+      socket.on('chat message', ({ sender, message }) => {
+        const chatBox = document.getElementById('chat-box');
+        const messageElement = document.createElement('p');
+        messageElement.innerHTML = `<strong>${
+          sender === 'admin' ? 'Admin' : sender
+        }:</strong> ${message}`;
+        chatBox.appendChild(messageElement);
+        chatBox.scrollTop = chatBox.scrollHeight;
+      });
+    </script>
+  </body>
+</html>

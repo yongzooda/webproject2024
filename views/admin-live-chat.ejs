@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Live Chat</title>
+    <style>
+      /* 기존 스타일 재사용 */
+    </style>
+  </head>
+  <body>
+    <h1>Admin Chat Panel</h1>
+    <div id="chat-box">
+      <!-- 관리자용 메시지 표시 -->
+    </div>
+    <form id="chat-form">
+      <input
+        type="text"
+        id="message-input"
+        placeholder="Type your message..."
+        required
+      />
+      <button type="submit">Send</button>
+    </form>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+      const userRole = 'admin'; // 관리자 역할 설정
+      socket.emit('join', userRole);
+
+      const chatForm = document.getElementById('chat-form');
+      const messageInput = document.getElementById('message-input');
+      const chatBox = document.getElementById('chat-box');
+
+      chatForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const message = messageInput.value;
+        socket.emit('chat message', message, userRole); // 관리자 메시지 전송
+        messageInput.value = '';
+      });
+
+      socket.on('chat message', (msg) => {
+        const messageElement = document.createElement('p');
+        messageElement.textContent = msg;
+        chatBox.appendChild(messageElement);
+        chatBox.scrollTop = chatBox.scrollHeight;
+      });
+    </script>
+  </body>
+</html>

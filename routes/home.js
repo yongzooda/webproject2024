@@ -5,10 +5,10 @@ const router = express.Router();
 const homeController = require('../controllers/homeController');
 const gymController = require('../controllers/gymController');
 const path = require('path');
-const multer = require('multer'); // multer 가져오기
+const multer = require('multer');
 const workoutLogController = require('../controllers/workoutLogController');
 
-// 메뉴 페이지 라우트
+// 홈 페이지 라우트
 router.get('/', homeController.getMenuPage);
 
 // 주변 헬스장 검색 페이지 렌더링 (EJS 템플릿 반환)
@@ -20,6 +20,7 @@ router.get('/api/nearby-gyms', gymController.getNearbyGyms);
 router.get('/workout-log', (req, res) => {
   res.redirect('/home/workout-logs');
 });
+
 // Multer 설정
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -46,7 +47,19 @@ router.get('/diet-log', homeController.getDietLog);
 // 그룹 챌린지 페이지 라우트
 router.get('/group-challenges', homeController.getGroupChallenges);
 
-// 실시간 상담 페이지 라우트
-router.get('/live-chat', homeController.getLiveChat);
+// 실시간 상담 라우트
+router.get('/live-chat', (req, res) => {
+  if (req.user && req.user.role === 'admin') {
+    // 관리자는 채팅방 목록으로 이동
+    res.redirect('/live-chat/rooms');
+  } else if (req.user) {
+    // 일반 사용자는 관리자와의 채팅방으로 이동
+    const userRoomId = `${req.user.username}_admin`;
+    res.redirect(`/live-chat/room/${userRoomId}`);
+  } else {
+    // 로그인하지 않은 경우
+    res.status(403).send('Access denied. Please log in first.');
+  }
+});
 
 module.exports = router;
