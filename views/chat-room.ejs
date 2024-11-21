@@ -105,10 +105,6 @@
       </form>
     </div>
     <script>
-      // JWT를 SessionStorage에 저장
-      const token = '<%= token %>'; // 서버에서 전달된 JWT
-      sessionStorage.setItem('userToken', token); // 현재 탭에 저장
-
       const socket = io({
         auth: {
           token: '<%= token %>', // EJS에서 서버에서 생성한 JWT를 삽입

@@ -74,14 +74,12 @@ app.use('/live-chat', liveChatRoutes);
 // Socket.IO 인증 처리 및 이벤트 처리
 io.on('connection', (socket) => {
   const token = socket.handshake.auth.token; // 클라이언트에서 전달된 JWT
-  console.log('Socket connected with token:', token);
 
   if (token) {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET); // JWT 검증
       socket.data.username = decoded.username; // 사용자 이름 저장
       socket.data.role = decoded.role; // 역할 저장
-      console.log('Socket user authenticated:', decoded);
     } catch (error) {
       console.error('Invalid JWT for socket connection:', error.message);
       socket.disconnect(); // 인증 실패 시 연결 해제
@@ -93,7 +91,6 @@ io.on('connection', (socket) => {
 
   // 방 참여
   socket.on('join room', ({ roomId }) => {
-    console.log(`Joining room: ${roomId} by ${socket.data.username}`);
     socket.join(roomId);
     console.log(`${socket.data.username} joined room: ${roomId}`);
   });
@@ -107,11 +104,8 @@ io.on('connection', (socket) => {
     chatController
       .saveMessage(roomId, sender, message)
       .then(() => {
-        console.log('Message saved to database:', { roomId, sender, message });
-
         // 방에 메시지 브로드캐스트
         io.to(roomId).emit('chat message', { sender, message });
-        console.log('Message broadcasted to room:', roomId);
       })
       .catch((error) => {
         console.error('Error saving message:', error.message);
