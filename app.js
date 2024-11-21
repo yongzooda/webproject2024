@@ -8,7 +8,7 @@ const loginRoutes = require('./routes/login');
 const registerRoutes = require('./routes/register');
 const homeRoutes = require('./routes/home');
 const liveChatRoutes = require('./routes/liveChat'); // liveChat 라우트 추가
-const ChatRoom = require('./models/ChatRoom'); // ChatRoom 모델 추가
+const chatController = require('./controllers/chatController'); // chatController 추가
 
 const app = express();
 const server = http.createServer(app); // HTTP 서버를 Socket.IO와 함께 사용
@@ -63,23 +63,25 @@ app.use('/live-chat', liveChatRoutes); // liveChat 라우트 연결
 
 // Socket.IO 이벤트 처리
 io.on('connection', (socket) => {
-  console.log('A user connected.');
+  console.log(`User connected: ${socket.id}`);
 
-  // 방에 참여
-  socket.on('join', async ({ roomId, role }) => {
-    console.log(`${role} joined room: ${roomId}`);
+  // 방 참여 이벤트
+  socket.on('join room', ({ roomId, username, role }) => {
     socket.join(roomId);
+    socket.data.username = username; // 연결된 소켓에 사용자 이름 저장
+    socket.data.role = role; // 역할 정보 저장
+    console.log(`${username} (${role}) joined room: ${roomId}`);
   });
 
-  // 메시지 수신 및 브로드캐스트
+  // 메시지 브로드캐스트
   socket.on('chat message', async ({ roomId, sender, message }) => {
     console.log(`Message from ${sender} in room ${roomId}: ${message}`);
 
-    // 메시지를 데이터베이스에 저장
-    const chatRoom = await ChatRoom.findOne({ roomId });
-    if (chatRoom) {
-      chatRoom.messages.push({ sender, message });
-      await chatRoom.save();
+    // 메시지를 데이터베이스에 저장 (chatController 사용)
+    try {
+      await chatController.saveMessage(roomId, sender, message);
+    } catch (error) {
+      console.error('Error saving message to database:', error);
     }
 
     // 해당 방에 메시지 전송
@@ -88,11 +90,11 @@ io.on('connection', (socket) => {
 
   // 사용자 연결 해제
   socket.on('disconnect', () => {
-    console.log('A user disconnected.');
+    console.log(`User disconnected: ${socket.id}`);
   });
 });
 
 // 서버 시작
 server.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log('Server running on http://localhost:${PORT}');
 });

@@ -1,3 +1,5 @@
+//chatController.js
+
 const ChatRoom = require('../models/ChatRoom');
 
 // 채팅방 목록 렌더링 (관리자만 접근 가능)
@@ -15,24 +17,47 @@ exports.getChatRooms = async (req, res) => {
   }
 };
 
-// 특정 채팅방 렌더링
+// 특정 채팅방 조회 및 렌더링
 exports.getChatRoom = async (req, res) => {
   const roomId = decodeURIComponent(req.params.roomId); // URI 복원
   try {
-    // 채팅방 조회
-    const chatRoom = await ChatRoom.findOne({ roomId });
+    let chatRoom = await ChatRoom.findOne({ roomId });
+
+    // 채팅방이 없으면 새로 생성
     if (!chatRoom) {
-      return res.status(404).send('Chat room not found'); // 채팅방이 없으면 404 반환
+      chatRoom = new ChatRoom({
+        roomId,
+        participants: [req.user.username, 'admin'], // 기본 참여자 추가
+        messages: [],
+      });
+      await chatRoom.save();
     }
 
-    res.render('chat-room', { chatRoom }); // chat-room.ejs 렌더링
+    // 사용자 정보를 EJS로 전달
+    res.render('chat-room', { chatRoom, user: req.user });
   } catch (error) {
-    console.error('Error fetching chat room:', error);
-    res.status(500).send('Error fetching chat room');
+    console.error('Error fetching or creating chat room:', error);
+    res.status(500).send('Error fetching or creating chat room');
   }
 };
 
-// 메시지 전송 처리
+// 메시지 저장 및 처리 (Socket.IO와 연동)
+exports.saveMessage = async (roomId, sender, message) => {
+  try {
+    const chatRoom = await ChatRoom.findOne({ roomId });
+
+    if (chatRoom) {
+      chatRoom.messages.push({ sender, message });
+      await chatRoom.save();
+    } else {
+      console.error('Chat room not found for saving message.');
+    }
+  } catch (error) {
+    console.error('Error saving message:', error);
+  }
+};
+
+// 메시지 전송 처리 (HTTP POST 요청 처리용)
 exports.postMessage = async (req, res) => {
   const roomId = decodeURIComponent(req.params.roomId); // URI 복원
   const { sender, message } = req.body;
@@ -55,24 +80,26 @@ exports.postMessage = async (req, res) => {
   }
 };
 
-// 일반 사용자가 관리자와의 채팅방 생성 및 참여
+// 사용자와 관리자의 채팅방 생성 및 참여
 exports.joinOrCreateChatRoom = async (req, res) => {
-  const userRoomId = encodeURIComponent(`${req.user.username}_admin`); // 고유한 채팅방 ID 생성 (URI 인코딩)
+  const userRoomId = `${req.user.username}_admin`;
 
   try {
-    // 기존 채팅방이 있는지 확인
+    // 방이 있는지 확인
     let chatRoom = await ChatRoom.findOne({ roomId: userRoomId });
+
     if (!chatRoom) {
-      // 채팅방이 없으면 새로 생성
+      // 방이 없으면 새로 생성
       chatRoom = new ChatRoom({
         roomId: userRoomId,
-        participants: [req.user.username, 'admin'], // 사용자와 관리자 추가
-        messages: [], // 메시지 초기화
+        participants: [req.user.username, 'admin'],
+        messages: [], // 빈 메시지 배열 초기화
       });
       await chatRoom.save();
     }
 
-    res.redirect(`/live-chat/room/${userRoomId}`); // 해당 채팅방으로 리다이렉션
+    // 채팅방으로 리다이렉트
+    res.redirect(`/live-chat/room/${encodeURIComponent(userRoomId)}`);
   } catch (error) {
     console.error('Error joining or creating chat room:', error);
     res.status(500).send('Error joining or creating chat room');

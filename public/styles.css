@@ -1,98 +1,132 @@
+/* Reset 및 기본 설정 */
 body {
-  font-family: Arial, sans-serif;
   margin: 0;
-  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 
-header {
-  background-color: #333;
-  color: white;
-  padding: 1em;
+/* 공통 컨테이너 스타일 */
+.container {
+  width: 100%;
+  max-width: 400px;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   text-align: center;
 }
 
+/* 공통 헤더 스타일 */
+header {
+  background: #007bff;
+  color: white;
+  padding: 15px;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  border-radius: 10px 10px 0 0;
+}
+
+/* 공통 form 스타일 */
 form {
-  max-width: 400px;
-  margin: 2em auto;
-  padding: 1em;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* 공통 input 및 button 스타일 */
+input[type='text'],
+input[type='password'],
+input[type='email'] {
+  padding: 12px;
+  font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 5px;
-}
-
-div {
-  margin-bottom: 1em;
-}
-
-label {
-  display: block;
-  margin-bottom: 0.5em;
-}
-
-input,
-textarea {
-  width: 100%;
-  padding: 0.5em;
   box-sizing: border-box;
+  width: 100%;
 }
 
-textarea {
-  resize: vertical;
+input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
 button {
-  width: 100%;
-  padding: 0.5em;
-  background-color: #333;
+  padding: 12px;
+  background: #007bff;
   color: white;
   border: none;
   border-radius: 5px;
+  font-size: 16px;
   cursor: pointer;
+  transition: background 0.3s ease;
 }
 
 button:hover {
-  background-color: #555;
+  background: #0056b3;
 }
 
-p {
-  text-align: center;
+/* 공통 링크 스타일 */
+a {
+  color: #007bff;
+  text-decoration: none;
 }
 
-/* 추가 스타일 */
-ul {
-  list-style: none;
-  padding: 0;
+a:hover {
+  text-decoration: underline;
 }
 
-ul li {
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  padding: 1em;
-  margin: 1em auto;
+/* Chat Room 스타일 추가 */
+.chat-room {
+  width: 100%;
   max-width: 600px;
-  background-color: #f9f9f9;
-}
-
-ul li h3 {
-  margin-top: 0;
-}
-
-ul li img {
-  display: block;
-  max-width: 100%;
-  height: auto;
-  margin-top: 1em;
+  height: 80vh;
+  background: white;
+  display: flex;
+  flex-direction: column;
   border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
-/* Section 스타일 */
-section {
-  padding: 1em;
-  margin: 1em auto;
-  max-width: 800px;
+.chat-box {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background-color: #f9f9f9;
+  display: flex;
+  flex-direction: column;
 }
 
-/* 제목 스타일 */
-h2 {
-  text-align: center;
-  margin-bottom: 1em;
+.message {
+  margin: 5px 0;
+  padding: 10px 15px;
+  border-radius: 10px;
+  max-width: 70%;
+  word-wrap: break-word;
+}
+
+.message.user {
+  align-self: flex-end;
+  background-color: #daf7a6;
+  color: black;
+}
+
+.message.admin {
+  align-self: flex-start;
+  background-color: #f1f1f1;
+  color: black;
+}
+
+form.chat-input {
+  display: flex;
+  padding: 10px;
+  background: #ffffff;
+  border-top: 1px solid #ddd;
+  gap: 10px;
 }

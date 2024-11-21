@@ -1,3 +1,5 @@
+//ChatRoom.js
+
 const mongoose = require('mongoose');
 
 const chatRoomSchema = new mongoose.Schema({

@@ -5,66 +5,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Register | FitConnect</title>
     <link rel="stylesheet" href="/styles.css" />
+    <style>
+      /* 추가 스타일 */
+      #admin-password-field {
+        display: none; /* 기본적으로 숨김 처리 */
+      }
+    </style>
   </head>
   <body>
-    <header>
-      <h1>Register for FitConnect</h1>
-    </header>
-    <main>
+    <div class="container">
+      <header>FitConnect Register</header>
       <form action="/register" method="POST">
-        <div>
-          <label for="username">Username:</label>
-          <input type="text" id="username" name="username" required />
-        </div>
-        <div>
-          <label for="password">Password:</label>
-          <input type="password" id="password" name="password" required />
-        </div>
-        <div>
-          <label for="email">Email:</label>
-          <input type="email" id="email" name="email" required />
-        </div>
-        <div>
-          <label for="age">Age:</label>
-          <input type="number" id="age" name="age" />
-        </div>
-        <div>
-          <label for="gender">Gender:</label>
-          <select id="gender" name="gender">
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-        <div>
-          <label for="interests">Interests:</label>
-          <input
-            type="text"
-            id="interests"
-            name="interests"
-            placeholder="e.g., fitness, running"
-          />
-        </div>
-        <div>
-          <label for="role">Role:</label>
-          <select
-            id="role"
-            name="role"
-            required
-            onchange="toggleAdminPasswordField(this.value)"
-          >
-            <option value="user">User</option>
-            <option value="admin">Admin</option>
-          </select>
-        </div>
-        <div id="admin-password-field" style="display: none">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required />
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required />
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required />
+
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age" />
+
+        <label for="gender">Gender:</label>
+        <select id="gender" name="gender">
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Other">Other</option>
+        </select>
+
+        <label for="interests">Interests:</label>
+        <input
+          type="text"
+          id="interests"
+          name="interests"
+          placeholder="e.g., fitness, running"
+        />
+
+        <label for="role">Role:</label>
+        <select
+          id="role"
+          name="role"
+          required
+          onchange="toggleAdminPasswordField(this.value)"
+        >
+          <option value="user">User</option>
+          <option value="admin">Admin</option>
+        </select>
+
+        <div id="admin-password-field">
           <label for="adminPassword">Admin Authentication Password:</label>
           <input type="password" id="adminPassword" name="adminPassword" />
         </div>
+
         <button type="submit">Register</button>
       </form>
       <p>Already have an account? <a href="/login">Login here</a></p>
-    </main>
+    </div>
+
     <script>
       function toggleAdminPasswordField(role) {
         const adminField = document.getElementById('admin-password-field');

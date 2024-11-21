@@ -1,3 +1,5 @@
+//liveChat.js
+
 const express = require('express');
 const router = express.Router();
 const chatController = require('../controllers/chatController');
@@ -10,15 +12,21 @@ router.get('/', (req, res) => {
   } else if (req.user) {
     // 일반 사용자인 경우 본인의 채팅방으로 이동
     const userRoomId = encodeURIComponent(`${req.user.username}_admin`); // 사용자 이름 기반의 고유 roomId 생성 (URI 인코딩)
-    res.redirect(`/live-chat/room/${userRoomId}`);
+    res.redirect(`/live-chat/room/${userRoomId}`); // 템플릿 리터럴 사용
   } else {
     // 로그인하지 않은 경우
     res.status(403).send('Access denied. Please log in first.');
   }
 });
 
-// 일반 사용자가 채팅방 참여 또는 생성
-router.get('/room', chatController.joinOrCreateChatRoom);
+// 일반 사용자가 관리자와의 채팅방 참여 또는 생성
+router.get('/room', (req, res) => {
+  if (req.user) {
+    chatController.joinOrCreateChatRoom(req, res); // 일반 사용자 처리
+  } else {
+    res.status(403).send('Access denied. Please log in first.');
+  }
+});
 
 // 채팅방 목록 페이지
 router.get('/rooms', chatController.getChatRooms);
