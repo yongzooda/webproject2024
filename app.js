@@ -1,33 +1,53 @@
 const express = require('express');
-const session = require('express-session'); // 세션 관리용 모듈
-const http = require('http'); // HTTP 서버 생성
+const http = require('http');
 const { Server } = require('socket.io');
 const path = require('path');
 const connectDB = require('./config/db');
 const loginRoutes = require('./routes/login');
 const registerRoutes = require('./routes/register');
 const homeRoutes = require('./routes/home');
-const liveChatRoutes = require('./routes/liveChat'); // liveChat 라우트 추가
-const chatController = require('./controllers/chatController'); // chatController 추가
+const liveChatRoutes = require('./routes/liveChat');
+const chatController = require('./controllers/chatController');
+const cookieParser = require('cookie-parser');
+const jwt = require('jsonwebtoken');
 
 const app = express();
-const server = http.createServer(app); // HTTP 서버를 Socket.IO와 함께 사용
+const server = http.createServer(app); // HTTP 서버 생성
 const io = new Server(server);
 
 const PORT = process.env.PORT || 3000;
 
+// 환경 변수 로드 (JWT_SECRET 설정 필요)
+require('dotenv').config();
+
+// 쿠키 파서 추가
+app.use(cookieParser());
+
+// JWT 기반 글로벌 미들웨어
+app.use((req, res, next) => {
+  console.log('--- Global middleware executed ---');
+  console.log('Cookies in request:', req.cookies);
+
+  const token = req.cookies.token; // 쿠키에서 JWT 가져오기
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET); // JWT 검증
+      req.user = decoded; // 사용자 정보 설정
+      console.log('Decoded user from token:', req.user);
+    } catch (error) {
+      console.error('Invalid or expired JWT:', error.message);
+      req.user = null; // 인증 실패 시 req.user를 null로 설정
+    }
+  } else {
+    console.log('No JWT token found in cookies.');
+    req.user = null;
+  }
+
+  next();
+});
+
 // MongoDB 연결 실행
 connectDB();
-
-// 세션 미들웨어 설정
-app.use(
-  session({
-    secret: 'yourSecretKey', // 임의의 보안 키를 설정
-    resave: false,
-    saveUninitialized: false,
-    cookie: { secure: false }, // HTTPS 사용 시 secure를 true로 설정
-  })
-);
 
 // EJS 템플릿 엔진 설정
 app.set('view engine', 'ejs');
@@ -36,21 +56,11 @@ app.set('views', path.join(__dirname, 'views'));
 // 정적 파일 경로 설정
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Body-parser 내장 미들웨어
+// Body-parser 미들웨어
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// 사용자 역할 구분 미들웨어
-app.use((req, res, next) => {
-  if (req.session && req.session.user) {
-    req.user = req.session.user; // 세션에서 사용자 정보 가져오기
-  } else {
-    req.user = null; // 로그인되지 않은 경우 null 설정
-  }
-  next();
-});
-
-// 기본 홈페이지 진입 시 로그인 페이지로 리다이렉트
+// 기본 홈페이지 리다이렉트
 app.get('/', (req, res) => {
   res.redirect('/login');
 });
@@ -59,33 +69,53 @@ app.get('/', (req, res) => {
 app.use('/', loginRoutes);
 app.use('/register', registerRoutes);
 app.use('/home', homeRoutes);
-app.use('/live-chat', liveChatRoutes); // liveChat 라우트 연결
+app.use('/live-chat', liveChatRoutes);
 
-// Socket.IO 이벤트 처리
+// Socket.IO 인증 처리 및 이벤트 처리
 io.on('connection', (socket) => {
-  console.log(`User connected: ${socket.id}`);
+  const token = socket.handshake.auth.token; // 클라이언트에서 전달된 JWT
+  console.log('Socket connected with token:', token);
 
-  // 방 참여 이벤트
-  socket.on('join room', ({ roomId, username, role }) => {
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET); // JWT 검증
+      socket.data.username = decoded.username; // 사용자 이름 저장
+      socket.data.role = decoded.role; // 역할 저장
+      console.log('Socket user authenticated:', decoded);
+    } catch (error) {
+      console.error('Invalid JWT for socket connection:', error.message);
+      socket.disconnect(); // 인증 실패 시 연결 해제
+    }
+  } else {
+    console.error('No token provided for socket connection');
+    socket.disconnect(); // 토큰 없을 시 연결 해제
+  }
+
+  // 방 참여
+  socket.on('join room', ({ roomId }) => {
+    console.log(`Joining room: ${roomId} by ${socket.data.username}`);
     socket.join(roomId);
-    socket.data.username = username; // 연결된 소켓에 사용자 이름 저장
-    socket.data.role = role; // 역할 정보 저장
-    console.log(`${username} (${role}) joined room: ${roomId}`);
+    console.log(`${socket.data.username} joined room: ${roomId}`);
   });
 
-  // 메시지 브로드캐스트
-  socket.on('chat message', async ({ roomId, sender, message }) => {
-    console.log(`Message from ${sender} in room ${roomId}: ${message}`);
+  // 메시지 전송
+  socket.on('chat message', ({ roomId, message }) => {
+    const sender = socket.data.username;
+    console.log('Received chat message:', { roomId, sender, message });
 
-    // 메시지를 데이터베이스에 저장 (chatController 사용)
-    try {
-      await chatController.saveMessage(roomId, sender, message);
-    } catch (error) {
-      console.error('Error saving message to database:', error);
-    }
+    // 메시지 저장
+    chatController
+      .saveMessage(roomId, sender, message)
+      .then(() => {
+        console.log('Message saved to database:', { roomId, sender, message });
 
-    // 해당 방에 메시지 전송
-    io.to(roomId).emit('chat message', { sender, message });
+        // 방에 메시지 브로드캐스트
+        io.to(roomId).emit('chat message', { sender, message });
+        console.log('Message broadcasted to room:', roomId);
+      })
+      .catch((error) => {
+        console.error('Error saving message:', error.message);
+      });
   });
 
   // 사용자 연결 해제
@@ -96,5 +126,5 @@ io.on('connection', (socket) => {
 
 // 서버 시작
 server.listen(PORT, () => {
-  console.log('Server running on http://localhost:${PORT}');
+  console.log(`Server running on http://localhost:${PORT}`);
 });

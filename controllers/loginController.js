@@ -1,6 +1,9 @@
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 
+const jwt = require('jsonwebtoken');
+const jwtSecret = process.env.JWT_SECRET; // JWT 서명용 비밀 키
+
 // 로그인 페이지 렌더링
 exports.getLoginPage = (req, res) => {
   res.render('login');
@@ -30,18 +33,22 @@ exports.handleLogin = async (req, res) => {
       return res.status(400).send('Invalid credentials. Please try again.');
     }
 
-    // 세션에 사용자 정보 저장 (isAdmin -> role)
-    req.session.user = {
-      username: user.username,
-      role: user.role, // 'role' 값을 세션에 저장
-    };
+    // JWT 생성
+    const token = jwt.sign(
+      { username: user.username, role: user.role }, // JWT 페이로드
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
 
-    console.log('로그인 성공! 세션 정보:', req.session.user);
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'Lax',
+    });
 
-    // 로그인 성공 시 홈 페이지로 리다이렉트
-    res.redirect('/home');
+    res.redirect('/home'); // 홈 페이지로 리다이렉트
   } catch (err) {
-    console.error('로그인 처리 중 오류 발생:', err);
+    console.error('Error setting cookie:', err.message);
     res.status(500).send('Server error');
   }
 };

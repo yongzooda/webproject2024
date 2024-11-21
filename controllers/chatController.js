@@ -4,6 +4,7 @@ const ChatRoom = require('../models/ChatRoom');
 
 // 채팅방 목록 렌더링 (관리자만 접근 가능)
 exports.getChatRooms = async (req, res) => {
+  console.log('User from req:', req.user); // 디버깅: req.user 확인
   if (!req.user || req.user.role !== 'admin') {
     return res.status(403).send('Access denied'); // 일반 사용자는 접근 불가
   }
@@ -19,11 +20,18 @@ exports.getChatRooms = async (req, res) => {
 
 // 특정 채팅방 조회 및 렌더링
 exports.getChatRoom = async (req, res) => {
+  console.log('User from req:', req.user); // req.user 확인
   const roomId = decodeURIComponent(req.params.roomId); // URI 복원
+  console.log('Room ID:', roomId); // 디버깅: roomId 확인
+
+  if (!req.user) {
+    console.error('Error: req.user is undefined in getChatRoom');
+    return res.status(403).send('Access denied: User not authenticated.');
+  }
+
   try {
     let chatRoom = await ChatRoom.findOne({ roomId });
 
-    // 채팅방이 없으면 새로 생성
     if (!chatRoom) {
       chatRoom = new ChatRoom({
         roomId,
@@ -34,7 +42,11 @@ exports.getChatRoom = async (req, res) => {
     }
 
     // 사용자 정보를 EJS로 전달
-    res.render('chat-room', { chatRoom, user: req.user });
+    res.render('chat-room', {
+      chatRoom,
+      user: req.user,
+      token: req.cookies.token, // JWT 토큰 전달
+    });
   } catch (error) {
     console.error('Error fetching or creating chat room:', error);
     res.status(500).send('Error fetching or creating chat room');
@@ -43,17 +55,20 @@ exports.getChatRoom = async (req, res) => {
 
 // 메시지 저장 및 처리 (Socket.IO와 연동)
 exports.saveMessage = async (roomId, sender, message) => {
+  console.log('Attempting to save message:', { roomId, sender, message });
+
   try {
     const chatRoom = await ChatRoom.findOne({ roomId });
-
-    if (chatRoom) {
-      chatRoom.messages.push({ sender, message });
-      await chatRoom.save();
-    } else {
-      console.error('Chat room not found for saving message.');
+    if (!chatRoom) {
+      console.error('Chat room not found:', roomId);
+      return;
     }
+
+    chatRoom.messages.push({ sender, message, timestamp: new Date() });
+    await chatRoom.save();
+    console.log('Message successfully saved:', { roomId, sender, message });
   } catch (error) {
-    console.error('Error saving message:', error);
+    console.error('Error saving message to database:', error.message);
   }
 };
 

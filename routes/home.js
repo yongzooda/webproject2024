@@ -8,6 +8,8 @@ const path = require('path');
 const multer = require('multer');
 const workoutLogController = require('../controllers/workoutLogController');
 
+const authenticateJWT = require('../middlewares/auth');
+
 // 홈 페이지 라우트
 router.get('/', homeController.getMenuPage);
 
@@ -48,7 +50,8 @@ router.get('/diet-log', homeController.getDietLog);
 router.get('/group-challenges', homeController.getGroupChallenges);
 
 // 실시간 상담 라우트
-router.get('/live-chat', (req, res) => {
+router.get('/live-chat', authenticateJWT, (req, res) => {
+  console.log('User in /live-chat route:', req.user); // 디버깅 로그 추가
   if (req.user && req.user.role === 'admin') {
     // 관리자는 채팅방 목록으로 이동
     res.redirect('/live-chat/rooms');
