@@ -5,74 +5,89 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Nearby Gyms | FitConnect</title>
     <link rel="stylesheet" href="/styles.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-    />
     <style>
       body {
         background: linear-gradient(to bottom, #2c3e50, #4ca1af);
         color: #fff;
         font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
       }
+
       header {
         text-align: center;
-        padding: 2rem;
+        padding: 1rem;
+        background: #007bff;
+        color: white;
+        font-size: 1.5rem;
       }
-      #gym-list {
+
+      main {
         display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 1rem;
-        padding: 2rem;
+        width: 95%;
+        height: calc(100vh - 120px);
+        margin: 1rem auto;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        background: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
       }
+
+      #gym-list {
+        flex: 0 0 40%;
+        overflow-y: auto;
+        background: #f9f9f9;
+        padding: 1rem;
+        border-right: 1px solid #ddd;
+        box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+      }
+
       .gym-card {
-        background-color: #f8f9fa;
-        color: #333;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        padding: 1.5rem;
-        width: 250px;
-        text-align: center;
+        background-color: #fff;
+        margin-bottom: 1rem;
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         transition: transform 0.2s;
       }
+
       .gym-card:hover {
-        transform: translateY(-5px);
+        transform: scale(1.05);
       }
-      .card-icon {
-        font-size: 2rem;
-        color: #4ca1af;
-        margin-bottom: 1rem;
+
+      .gym-card h2 {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
       }
+
+      .gym-card p {
+        font-size: 0.9rem;
+        margin: 0.2rem 0;
+      }
+
       #map {
-        width: 100%;
-        height: 400px;
-        margin: 2rem auto;
+        flex: 0 0 60%;
+        height: 100%;
       }
     </style>
   </head>
   <body>
     <header>
       <h1>Nearby Gyms</h1>
-      <p>Finding gyms near your location...</p>
     </header>
     <main>
-      <div id="gym-list">
-        <!-- 헬스장 목록이 여기에 표시됩니다 -->
-      </div>
+      <div id="gym-list"></div>
       <div id="map"></div>
-      <!-- 지도 표시 -->
     </main>
 
-    <!-- Google Maps API 로드 -->
     <script
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCR_YT9dN3ei0ZBsiui-9UX8Vj6POVYEHQ&callback=initMap"
       async
       defer
     ></script>
-
     <script>
-      // 지도 초기화 및 사용자 위치 처리
+      let map;
+
       function initMap() {
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
@@ -82,8 +97,10 @@
                 lng: position.coords.longitude,
               };
 
-              const map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 12,
+              console.log('User Location:', userLocation);
+
+              map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 14,
                 center: userLocation,
               });
 
@@ -96,19 +113,21 @@
                 },
               });
 
-              fetchNearbyGyms(map, userLocation);
+              const searchRadius = new google.maps.Circle({
+                map: map,
+                center: userLocation,
+                radius: 5000,
+                fillColor: '#007bff',
+                fillOpacity: 0.1,
+                strokeColor: '#007bff',
+                strokeOpacity: 0.5,
+              });
+
+              fetchNearbyGyms(userLocation);
             },
             (error) => {
               console.error('Geolocation error:', error);
               alert('Location access denied. Showing default location.');
-              const defaultLocation = { lat: 37.7749, lng: -122.4194 };
-
-              const map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 12,
-                center: defaultLocation,
-              });
-
-              fetchNearbyGyms(map, defaultLocation);
             }
           );
         } else {
@@ -116,10 +135,10 @@
         }
       }
 
-      // 서버에서 헬스장 데이터를 가져와 지도 및 목록에 표시
-      function fetchNearbyGyms(map, location) {
+      function fetchNearbyGyms(location) {
         const { lat, lng } = location;
         const requestUrl = `/home/api/nearby-gyms?lat=${lat}&lng=${lng}`;
+        console.log('Request URL:', requestUrl);
 
         fetch(requestUrl)
           .then((response) => {
@@ -129,15 +148,47 @@
             return response.json();
           })
           .then((gyms) => {
-            displayGyms(gyms); // 헬스장 목록 표시
-            addGymMarkers(map, gyms); // 지도에 마커 추가
+            console.log('Gyms Data:', gyms); // API 응답 데이터 확인
+            gyms.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+            displayGyms(gyms);
+            addMarkersToMap(gyms);
           })
-          .catch((error) => console.error('Fetch Error:', error));
+          .catch((error) => console.error('Error fetching gyms:', error));
       }
 
-      // 지도에 헬스장 마커 추가
-      function addGymMarkers(map, gyms) {
+      function displayGyms(gyms) {
+        const gymList = document.getElementById('gym-list');
+        if (!gyms || gyms.length === 0) {
+          gymList.innerHTML = '<p>No gyms found nearby.</p>';
+          return;
+        }
+
+        gymList.innerHTML = gyms
+          .map((gym) => {
+            console.log('Gym Data:', gym); // 각 헬스장 데이터 확인
+            if (gym.name && gym.vicinity) {
+              return `
+                <div class="gym-card">
+                  <h2>${gym.name}</h2>
+                  <p>${gym.vicinity}</p>
+                  ${
+                    gym.rating
+                      ? `<p>Rating: ${gym.rating} ⭐</p>`
+                      : '<p>No rating available</p>'
+                  }
+                </div>
+              `;
+            } else {
+              console.warn('Incomplete Gym Data:', gym);
+              return '<div class="gym-card"><p>Data unavailable</p></div>';
+            }
+          })
+          .join('');
+      }
+
+      function addMarkersToMap(gyms) {
         gyms.forEach((gym) => {
+          console.log('Adding Marker for:', gym.name); // 마커 디버깅
           const marker = new google.maps.Marker({
             position: {
               lat: gym.geometry.location.lat,
@@ -163,28 +214,6 @@
             infoWindow.open(map, marker);
           });
         });
-      }
-
-      // 헬스장 목록 표시
-      function displayGyms(gyms) {
-        const gymList = document.getElementById('gym-list');
-        if (gyms.length === 0) {
-          gymList.innerHTML = '<p>No gyms found nearby.</p>';
-          return;
-        }
-
-        gymList.innerHTML = gyms
-          .map(
-            (gym) => `
-              <div class="gym-card">
-                <i class="fas fa-dumbbell card-icon"></i>
-                <h2>${gym.name}</h2>
-                <p>${gym.vicinity}</p>
-                ${gym.rating ? `<p>Rating: ${gym.rating} ⭐</p>` : ''}
-              </div>
-            `
-          )
-          .join('');
       }
     </script>
   </body>

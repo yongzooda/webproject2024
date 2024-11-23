@@ -4,6 +4,7 @@ const { Server } = require('socket.io');
 const path = require('path');
 const connectDB = require('./config/db');
 const loginRoutes = require('./routes/login');
+const logoutRoutes = require('./routes/logout');
 const registerRoutes = require('./routes/register');
 const homeRoutes = require('./routes/home');
 const liveChatRoutes = require('./routes/liveChat');
@@ -67,6 +68,7 @@ app.get('/', (req, res) => {
 
 // 라우트 설정
 app.use('/', loginRoutes);
+app.use('/', logoutRoutes);
 app.use('/register', registerRoutes);
 app.use('/home', homeRoutes);
 app.use('/live-chat', liveChatRoutes);

@@ -75,6 +75,7 @@
     </style>
   </head>
   <body>
+    <% include partials/header %>
     <div class="chat-room">
       <header>
         Chat with <%= chatRoom.participants.find((p) => p !== user.username) %>

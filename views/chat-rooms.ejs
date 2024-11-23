@@ -15,16 +15,8 @@
         background: #f4f4f9;
       }
 
-      header {
-        background-color: #333;
-        color: white;
-        width: 100%;
-        padding: 1em;
-        text-align: center;
-      }
-
       main {
-        margin: 2em;
+        margin: 5em auto; /* 상단 마진 추가 */
         text-align: center;
         width: 80%;
       }
@@ -59,10 +51,10 @@
     </style>
   </head>
   <body>
-    <header>
-      <h1>Chat Rooms</h1>
-    </header>
+    <%- include("./partials/header") %>
+    <!-- 공통 헤더 포함 -->
     <main>
+      <h1>Chat Rooms</h1>
       <% if (chatRooms.length === 0) { %>
       <p class="no-rooms">현재 진행 중인 채팅이 없습니다.</p>
       <% } else { %>

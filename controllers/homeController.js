@@ -35,3 +35,10 @@ exports.getLiveChat = (req, res) => {
     res.status(403).send('Access denied. Please log in first.');
   }
 };
+
+exports.getHomePage = (req, res) => {
+  if (!req.user) {
+    return res.redirect('/login'); // 로그인 페이지로 리다이렉트
+  }
+  res.render('home', { user: req.user });
+};
