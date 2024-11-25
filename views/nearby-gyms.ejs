@@ -44,7 +44,7 @@
 
       .gym-card {
         background-color: #ffffff;
-        color: #333; /* 텍스트 색상 변경 */
+        color: #333;
         margin-bottom: 1rem;
         padding: 1rem;
         border-radius: 8px;
@@ -54,20 +54,20 @@
 
       .gym-card:hover {
         transform: scale(1.05);
-        background-color: #e6f7ff; /* hover 시 배경색 변경 */
+        background-color: #e6f7ff;
       }
 
       .gym-card h2 {
         font-size: 1rem;
         margin-bottom: 0.5rem;
-        color: #007bff; /* 제목 색상 변경 */
+        color: #007bff;
         font-weight: bold;
       }
 
       .gym-card p {
         font-size: 0.9rem;
         margin: 0.2rem 0;
-        color: #555; /* 텍스트 색상 변경 */
+        color: #555;
       }
 
       #map {
@@ -75,7 +75,6 @@
         height: 100%;
       }
     </style>
-    >
   </head>
   <body>
     <header>
@@ -93,26 +92,22 @@
     ></script>
     <script>
       let map;
+      let userLocation;
 
-      // 지도 초기화
       function initMap() {
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
             (position) => {
-              const userLocation = {
+              userLocation = {
                 lat: position.coords.latitude,
                 lng: position.coords.longitude,
               };
 
-              console.log('User Location:', userLocation);
-
-              // 지도 생성
               map = new google.maps.Map(document.getElementById('map'), {
                 zoom: 14,
                 center: userLocation,
               });
 
-              // 현재 위치 마커
               new google.maps.Marker({
                 position: userLocation,
                 map: map,
@@ -122,7 +117,6 @@
                 },
               });
 
-              // 탐색 반경 시각화
               new google.maps.Circle({
                 map: map,
                 center: userLocation,
@@ -145,36 +139,52 @@
         }
       }
 
-      // 근처 헬스장 데이터를 API로 가져오기
-      function fetchNearbyGyms(location) {
+      async function fetchNearbyGyms(location) {
         const { lat, lng } = location;
         const requestUrl = `/home/api/nearby-gyms?lat=${lat}&lng=${lng}`;
-        console.log('Request URL:', requestUrl);
+        const response = await fetch(requestUrl);
+        const data = await response.json();
 
-        fetch(requestUrl)
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.json();
-          })
-          .then((gyms) => {
-            console.log('Gyms Data:', gyms);
-            gyms.sort((a, b) => (b.rating || 0) - (a.rating || 0)); // 평점으로 정렬
-            displayGyms(gyms);
-            addMarkersToMap(gyms);
-          })
-          .catch((error) => console.error('Error fetching gyms:', error));
+        // 거리 계산 및 정렬
+        data.forEach((gym) => {
+          if (gym.geometry && gym.geometry.location) {
+            gym.distance = calculateDistance(location, {
+              lat: gym.geometry.location.lat,
+              lng: gym.geometry.location.lng,
+            });
+          } else {
+            gym.distance = Infinity; // 위치 정보가 없으면 무한대로 설정
+          }
+        });
+
+        // 평점(내림차순), 거리(오름차순) 기준으로 정렬
+        data.sort((a, b) => {
+          const ratingDiff = (b.rating || 0) - (a.rating || 0);
+          if (ratingDiff !== 0) return ratingDiff; // 평점 우선 정렬
+          return a.distance - b.distance; // 평점이 같으면 거리 기준 정렬
+        });
+
+        displayGyms(data);
+        addMarkersToMap(data);
       }
 
-      // 헬스장 목록 표시
+      function calculateDistance(loc1, loc2) {
+        const toRad = (value) => (value * Math.PI) / 180;
+        const R = 6371; // 지구 반지름 (km)
+        const dLat = toRad(loc2.lat - loc1.lat);
+        const dLng = toRad(loc2.lng - loc1.lng);
+        const a =
+          Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.cos(toRad(loc1.lat)) *
+            Math.cos(toRad(loc2.lat)) *
+            Math.sin(dLng / 2) *
+            Math.sin(dLng / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c; // 거리(km)
+      }
+
       function displayGyms(gyms) {
         const gymList = document.getElementById('gym-list');
-        if (!gyms || gyms.length === 0) {
-          gymList.innerHTML = '<p>No gyms found nearby.</p>';
-          return;
-        }
-
         gymList.innerHTML = gyms
           .map((gym) => {
             const name = gym.name || 'No name available';
@@ -182,25 +192,25 @@
             const rating = gym.rating
               ? `<p>Rating: ${gym.rating} ⭐</p>`
               : '<p>No rating available</p>';
+            const distance = gym.distance
+              ? `<p>Distance: ${gym.distance.toFixed(2)} km</p>`
+              : '';
 
             return `
               <div class="gym-card">
                 <h2>${name}</h2>
                 <p>${vicinity}</p>
                 ${rating}
+                ${distance}
               </div>
             `;
           })
           .join('');
       }
 
-      // 지도에 헬스장 마커 추가
       function addMarkersToMap(gyms) {
         gyms.forEach((gym) => {
-          if (!gym.geometry || !gym.geometry.location) {
-            console.warn('Incomplete gym location data:', gym);
-            return;
-          }
+          if (!gym.geometry || !gym.geometry.location) return;
 
           const marker = new google.maps.Marker({
             position: {
@@ -213,18 +223,27 @@
 
           const infoWindow = new google.maps.InfoWindow({
             content: `
-    <div style="color: #333; font-family: Arial, sans-serif; line-height: 1.5; max-width: 200px;">
-      <h2 style="font-size: 1rem; margin: 0 0 0.5rem; color: #007bff;">${
-        gym.name
-      }</h2>
-      <p style="margin: 0 0 0.5rem; color: #555;">${gym.vicinity}</p>
-      ${
-        gym.rating
-          ? `<p style="margin: 0; color: #444;">Rating: <strong>${gym.rating} ⭐</strong></p>`
-          : '<p style="margin: 0; color: #999;">No rating available</p>'
-      }
-    </div>
-  `,
+              <div style="max-width: 250px; font-family: Arial, sans-serif; line-height: 1.5;">
+                <h2 style="font-size: 1rem; margin: 0 0 0.5rem; color: #007bff;">${
+                  gym.name || 'No name available'
+                }</h2>
+                <p style="margin: 0 0 0.5rem; color: #555;">${
+                  gym.vicinity || 'No location available'
+                }</p>
+                ${
+                  gym.rating
+                    ? `<p style="margin: 0; color: #444;">Rating: <strong>${gym.rating} ⭐</strong></p>`
+                    : '<p style="margin: 0; color: #999;">No rating available</p>'
+                }
+                ${
+                  gym.distance
+                    ? `<p style="margin: 0; color: #666;">Distance: ${gym.distance.toFixed(
+                        2
+                      )} km</p>`
+                    : ''
+                }
+              </div>
+            `,
           });
 
           marker.addListener('click', () => {
