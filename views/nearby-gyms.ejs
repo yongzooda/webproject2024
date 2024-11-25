@@ -43,26 +43,31 @@
       }
 
       .gym-card {
-        background-color: #fff;
+        background-color: #ffffff;
+        color: #333; /* 텍스트 색상 변경 */
         margin-bottom: 1rem;
         padding: 1rem;
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        transition: transform 0.2s;
+        transition: transform 0.2s, background-color 0.3s;
       }
 
       .gym-card:hover {
         transform: scale(1.05);
+        background-color: #e6f7ff; /* hover 시 배경색 변경 */
       }
 
       .gym-card h2 {
         font-size: 1rem;
         margin-bottom: 0.5rem;
+        color: #007bff; /* 제목 색상 변경 */
+        font-weight: bold;
       }
 
       .gym-card p {
         font-size: 0.9rem;
         margin: 0.2rem 0;
+        color: #555; /* 텍스트 색상 변경 */
       }
 
       #map {
@@ -70,6 +75,7 @@
         height: 100%;
       }
     </style>
+    >
   </head>
   <body>
     <header>
@@ -88,6 +94,7 @@
     <script>
       let map;
 
+      // 지도 초기화
       function initMap() {
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
@@ -99,11 +106,13 @@
 
               console.log('User Location:', userLocation);
 
+              // 지도 생성
               map = new google.maps.Map(document.getElementById('map'), {
                 zoom: 14,
                 center: userLocation,
               });
 
+              // 현재 위치 마커
               new google.maps.Marker({
                 position: userLocation,
                 map: map,
@@ -113,7 +122,8 @@
                 },
               });
 
-              const searchRadius = new google.maps.Circle({
+              // 탐색 반경 시각화
+              new google.maps.Circle({
                 map: map,
                 center: userLocation,
                 radius: 5000,
@@ -135,6 +145,7 @@
         }
       }
 
+      // 근처 헬스장 데이터를 API로 가져오기
       function fetchNearbyGyms(location) {
         const { lat, lng } = location;
         const requestUrl = `/home/api/nearby-gyms?lat=${lat}&lng=${lng}`;
@@ -148,14 +159,15 @@
             return response.json();
           })
           .then((gyms) => {
-            console.log('Gyms Data:', gyms); // API 응답 데이터 확인
-            gyms.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+            console.log('Gyms Data:', gyms);
+            gyms.sort((a, b) => (b.rating || 0) - (a.rating || 0)); // 평점으로 정렬
             displayGyms(gyms);
             addMarkersToMap(gyms);
           })
           .catch((error) => console.error('Error fetching gyms:', error));
       }
 
+      // 헬스장 목록 표시
       function displayGyms(gyms) {
         const gymList = document.getElementById('gym-list');
         if (!gyms || gyms.length === 0) {
@@ -165,49 +177,54 @@
 
         gymList.innerHTML = gyms
           .map((gym) => {
-            console.log('Gym Data:', gym); // 각 헬스장 데이터 확인
-            if (gym.name && gym.vicinity) {
-              return `
-                <div class="gym-card">
-                  <h2>${gym.name}</h2>
-                  <p>${gym.vicinity}</p>
-                  ${
-                    gym.rating
-                      ? `<p>Rating: ${gym.rating} ⭐</p>`
-                      : '<p>No rating available</p>'
-                  }
-                </div>
-              `;
-            } else {
-              console.warn('Incomplete Gym Data:', gym);
-              return '<div class="gym-card"><p>Data unavailable</p></div>';
-            }
+            const name = gym.name || 'No name available';
+            const vicinity = gym.vicinity || 'No location available';
+            const rating = gym.rating
+              ? `<p>Rating: ${gym.rating} ⭐</p>`
+              : '<p>No rating available</p>';
+
+            return `
+              <div class="gym-card">
+                <h2>${name}</h2>
+                <p>${vicinity}</p>
+                ${rating}
+              </div>
+            `;
           })
           .join('');
       }
 
+      // 지도에 헬스장 마커 추가
       function addMarkersToMap(gyms) {
         gyms.forEach((gym) => {
-          console.log('Adding Marker for:', gym.name); // 마커 디버깅
+          if (!gym.geometry || !gym.geometry.location) {
+            console.warn('Incomplete gym location data:', gym);
+            return;
+          }
+
           const marker = new google.maps.Marker({
             position: {
               lat: gym.geometry.location.lat,
               lng: gym.geometry.location.lng,
             },
             map: map,
-            title: gym.name,
+            title: gym.name || 'No name available',
           });
 
           const infoWindow = new google.maps.InfoWindow({
-            content: `<div>
-              <h2>${gym.name}</h2>
-              <p>${gym.vicinity}</p>
-              ${
-                gym.rating
-                  ? `<p>Rating: ${gym.rating} ⭐</p>`
-                  : '<p>No rating available</p>'
-              }
-            </div>`,
+            content: `
+    <div style="color: #333; font-family: Arial, sans-serif; line-height: 1.5; max-width: 200px;">
+      <h2 style="font-size: 1rem; margin: 0 0 0.5rem; color: #007bff;">${
+        gym.name
+      }</h2>
+      <p style="margin: 0 0 0.5rem; color: #555;">${gym.vicinity}</p>
+      ${
+        gym.rating
+          ? `<p style="margin: 0; color: #444;">Rating: <strong>${gym.rating} ⭐</strong></p>`
+          : '<p style="margin: 0; color: #999;">No rating available</p>'
+      }
+    </div>
+  `,
           });
 
           marker.addListener('click', () => {

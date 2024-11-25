@@ -1,3 +1,4 @@
+// gymController.js
 exports.getNearbyGymsPage = (req, res) => {
   // nearby-gyms.ejs 템플릿 렌더링
   res.render('nearby-gyms'); // EJS 파일 이름
@@ -8,7 +9,6 @@ exports.getNearbyGyms = async (req, res) => {
   const { lat, lng } = req.query;
 
   if (!lat || !lng) {
-    // 상세 오류 메시지 추가
     console.error('Missing Latitude or Longitude:', req.query);
     return res
       .status(400)
@@ -25,6 +25,11 @@ exports.getNearbyGyms = async (req, res) => {
     const { default: fetch } = await import('node-fetch');
     const response = await fetch(url);
     const data = await response.json();
+
+    console.log('Fetched API Data:', data.results); // 디버깅용 로그
+    if (!data.results || data.results.length === 0) {
+      return res.status(404).json({ error: 'No gyms found.' });
+    }
 
     res.json(data.results); // 결과 반환
   } catch (error) {
