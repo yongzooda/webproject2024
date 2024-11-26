@@ -1,4 +1,5 @@
 const express = require('express');
+const engine = require('ejs-mate');
 const http = require('http');
 const { Server } = require('socket.io');
 const path = require('path');
@@ -15,6 +16,8 @@ const jwt = require('jsonwebtoken');
 const app = express();
 const server = http.createServer(app); // HTTP 서버 생성
 const io = new Server(server);
+
+const expressLayouts = require('express-ejs-layouts');
 
 const PORT = process.env.PORT || 3000;
 
@@ -51,11 +54,22 @@ app.use((req, res, next) => {
 connectDB();
 
 // EJS 템플릿 엔진 설정
+app.engine('ejs', engine); // EJS-Mate 설정
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+// 레이아웃 활성화
+app.use(expressLayouts);
+app.set('layout', 'layouts/main'); // 레이아웃 기본 설정
+
 // 정적 파일 경로 설정
 app.use(express.static(path.join(__dirname, 'public')));
+
+// res.locals.user 설정 미들웨어
+app.use((req, res, next) => {
+  res.locals.user = req.user || null; // res.locals에 user 설정
+  next();
+});
 
 // Body-parser 미들웨어
 app.use(express.urlencoded({ extended: true }));

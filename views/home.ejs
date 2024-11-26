@@ -1,118 +1,110 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FitConnect | Home</title>
-    <link rel="stylesheet" href="/styles.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-    />
-    <style>
-      body {
-        background: linear-gradient(to bottom, #2c3e50, #4ca1af);
-        color: #fff;
-        font-family: Arial, sans-serif;
-      }
-      header {
-        text-align: center;
-        padding: 2rem;
-      }
-      main {
-        display: flex;
-        justify-content: center;
-        padding: 2rem;
-      }
-      nav ul {
-        list-style-type: none;
-        padding: 0;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-        justify-content: center;
-      }
-      nav ul li {
-        flex: 1 1 200px;
-        max-width: 250px;
-      }
-      .card {
-        background-color: #f8f9fa;
-        color: #333;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        padding: 2rem;
-        text-align: center;
-        transition: transform 0.2s;
-      }
-      .card:hover {
-        transform: translateY(-5px);
-      }
-      .card-icon {
-        font-size: 2rem;
-        color: #4ca1af;
-        margin-bottom: 1rem;
-      }
-      .card a {
-        text-decoration: none;
-        color: #4ca1af;
-        font-weight: bold;
-        display: block;
-        margin-top: 1rem;
-      }
-    </style>
-  </head>
-  <body>
-    <%- include("./partials/header") %>
-    <header>
-      <h1>Welcome to FitConnect</h1>
-      <p>Select an option to continue</p>
-    </header>
-    <main>
-      <nav>
-        <ul>
-          <li>
-            <div class="card">
-              <i class="fas fa-map-marker-alt card-icon"></i>
-              <h2>Nearby Gyms</h2>
-              <a href="/home/nearby-gyms">Search Nearby Gyms</a>
-            </div>
-          </li>
-          <li>
-            <div class="card">
-              <i class="fas fa-dumbbell card-icon"></i>
-              <h2>Workout Log</h2>
-              <a href="/home/workout-logs">My Workout Log</a>
-            </div>
-          </li>
-          <li>
-            <div class="card">
-              <i class="fas fa-utensils card-icon"></i>
-              <h2>Diet Log</h2>
-              <a href="/home/diet-log">My Diet Log</a>
-            </div>
-          </li>
-          <li>
-            <div class="card">
-              <i class="fas fa-users card-icon"></i>
-              <h2>Group Challenges</h2>
-              <a href="/home/group-challenges">Group Challenges</a>
-            </div>
-          </li>
-          <li>
-            <div class="card">
-              <i class="fas fa-comments card-icon"></i>
-              <h2>Live Consultation</h2>
-              <!-- 관리자와 일반 사용자에 따라 링크 변경 -->
-              <% if (user && user.role === 'admin') { %>
-              <a href="/live-chat/rooms">Manage Chat Rooms</a>
-              <% } else { %>
-              <a href="/home/live-chat">Start Live Chat</a>
-              <% } %>
-            </div>
-          </li>
-        </ul>
-      </nav>
-    </main>
-  </body>
-</html>
+<main>
+  <style>
+    /* 전체 화면 설정 */
+    body {
+      margin: 0; /* body의 여백 제거 */
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom, #2c3e50, #4ca1af);
+      color: #fff;
+      min-height: 100vh; /* 화면 전체 크기 채우기 */
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 메인 레이아웃 */
+    main {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-grow: 1; /* 메인 영역이 남는 공간을 차지하도록 설정 */
+      padding-top: 2rem; /* 상단바와 겹치지 않도록 여백 추가 */
+      background-size: cover; /* 배경 크기 커버 */
+      width: 100%;
+    }
+
+    /* 메뉴 스타일 */
+    nav ul {
+      display: flex;
+      gap: 2rem; /* 메뉴 간 간격 */
+      padding: 0;
+      list-style: none;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* 카드 스타일 */
+    .card {
+      background-color: #ffffff;
+      color: #333;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      padding: 1.5rem;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      width: 200px; /* 카드 너비 */
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-icon {
+      font-size: 2rem;
+      color: #4ca1af;
+      margin-bottom: 1rem;
+    }
+
+    .card a {
+      text-decoration: none;
+      color: #4ca1af;
+      font-weight: bold;
+      display: block;
+      margin-top: 1rem;
+    }
+  </style>
+
+  <nav>
+    <ul>
+      <li>
+        <div class="card">
+          <i class="fas fa-map-marker-alt card-icon"></i>
+          <h2>Nearby Gyms</h2>
+          <a href="/home/nearby-gyms">Search Nearby Gyms</a>
+        </div>
+      </li>
+      <li>
+        <div class="card">
+          <i class="fas fa-dumbbell card-icon"></i>
+          <h2>Workout Log</h2>
+          <a href="/home/workout-logs">My Workout Log</a>
+        </div>
+      </li>
+      <li>
+        <div class="card">
+          <i class="fas fa-utensils card-icon"></i>
+          <h2>Diet Log</h2>
+          <a href="/home/diet-log">My Diet Log</a>
+        </div>
+      </li>
+      <li>
+        <div class="card">
+          <i class="fas fa-users card-icon"></i>
+          <h2>Group Challenges</h2>
+          <a href="/home/group-challenges">Group Challenges</a>
+        </div>
+      </li>
+      <li>
+        <div class="card">
+          <i class="fas fa-comments card-icon"></i>
+          <h2>Live Consultation</h2>
+          <% if (user && user.role === 'admin') { %>
+          <a href="/live-chat/rooms">Manage Chat Rooms</a>
+          <% } else { %>
+          <a href="/home/live-chat">Start Live Chat</a>
+          <% } %>
+        </div>
+      </li>
+    </ul>
+  </nav>
+</main>

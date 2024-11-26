@@ -49,6 +49,19 @@ router.post(
   upload.single('image'),
   workoutLogController.addWorkoutLog
 ); // 운동 일지 작성
+router.get(
+  '/workout-log/:id/edit',
+  authenticateJWT,
+  workoutLogController.getEditWorkoutLogPage
+); // 운동 일지 수정 폼
+
+router.post(
+  '/workout-log/:id/edit',
+  authenticateJWT,
+  upload.single('image'),
+  workoutLogController.editWorkoutLog
+); // 운동 일지 수정
+
 router.post('/workout-log/:id/delete', workoutLogController.deleteWorkoutLog); // 운동 일지 삭제
 
 // 식단 일지 페이지 라우트

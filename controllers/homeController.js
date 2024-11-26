@@ -1,24 +1,42 @@
 // controllers/homeController.js
 
+const jwt = require('jsonwebtoken');
+
 // home 페이지 렌더링
 exports.getMenuPage = (req, res) => {
   // 현재 로그인된 사용자의 정보를 EJS에 전달
-  res.render('home', { user: req.user });
+  res.render('home', {
+    user: req.user || null,
+    title: 'Home',
+    currentPage: 'Home',
+  });
 };
 
 // nearby-gyms.ejs 템플릿 렌더링
 exports.getNearbyGymsPage = (req, res) => {
-  res.render('nearby-gyms'); // EJS 파일 이름
+  res.render('nearby-gyms', {
+    user: req.user || null,
+    title: 'Nearby Gyms',
+    currentPage: 'Nearby Gyms',
+  });
 };
 
 // 식단 일지 페이지 렌더링
 exports.getDietLog = (req, res) => {
-  res.render('diet-log');
+  res.render('diet-log', {
+    user: req.user || null,
+    title: 'Diet Log',
+    currentPage: 'Diet Log',
+  });
 };
 
 // 그룹 챌린지 페이지 렌더링
 exports.getGroupChallenges = (req, res) => {
-  res.render('group-challenges');
+  res.render('group-challenges', {
+    user: req.user || null,
+    title: 'Group Challenges',
+    currentPage: 'Group Challenges',
+  });
 };
 
 // 실시간 상담 페이지 렌더링
@@ -40,5 +58,9 @@ exports.getHomePage = (req, res) => {
   if (!req.user) {
     return res.redirect('/login'); // 로그인 페이지로 리다이렉트
   }
-  res.render('home', { user: req.user });
+  res.render('home', {
+    user: req.user || null,
+    title: 'Home',
+    currentPage: 'Home',
+  });
 };

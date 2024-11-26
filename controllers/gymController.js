@@ -1,5 +1,9 @@
 exports.getNearbyGymsPage = (req, res) => {
-  res.render('nearby-gyms');
+  res.render('nearby-gyms', {
+    user: req.user, // 사용자 정보 전달
+    title: 'Nearby Gyms', // 페이지 제목
+    currentPage: 'Nearby Gyms', // 현재 페이지 이름
+  });
 };
 
 exports.getNearbyGyms = async (req, res) => {

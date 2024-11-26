@@ -1,99 +1,172 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Workout Logs</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-      }
+<style>
+  /* 상단바와 메인 컨텐츠 간 간격 확보 */
+  .main {
+    margin-top: 4rem; /* 상단바와 간격 확보 */
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
 
-      header {
-        background-color: #333;
-        color: white;
-        padding: 1em;
-        text-align: center;
-      }
+  .header-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    max-width: 1200px;
+    margin-bottom: 2rem;
+  }
 
-      .container {
-        max-width: 800px;
-        margin: 2em auto;
-        padding: 1em;
-        text-align: center;
-      }
+  .header-controls h1 {
+    font-size: 2rem;
+    text-align: left;
+    margin: 0;
+  }
 
-      ul {
-        list-style: none;
-        padding: 0;
-      }
+  .header-controls a.add-log-btn {
+    display: inline-block;
+    padding: 0.8rem 1.5rem;
+    background-color: #4caf50; /* 녹색 버튼 */
+    color: white;
+    text-decoration: none;
+    font-size: 1rem;
+    border-radius: 5px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    white-space: nowrap; /* 버튼이 줄바꿈되지 않도록 설정 */
+  }
 
-      li {
-        margin: 1em 0;
-        padding: 1em;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-      }
+  .header-controls a.add-log-btn:hover {
+    background-color: #45a049;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
 
-      a.add-log-btn {
-        display: inline-block;
-        margin: 1em auto;
-        padding: 0.8em 1.5em;
-        background-color: #4caf50;
-        color: white;
-        text-decoration: none;
-        font-size: 1rem;
-        border-radius: 5px;
-      }
+  .container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: left;
+    background: #f9f9f9;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow-y: auto; /* 스크롤 가능 */
+    height: calc(100vh - 8rem); /* 화면 높이에서 상단바와 제목 영역 제외 */
+  }
 
-      a.add-log-btn:hover {
-        background-color: #45a049;
-      }
+  ul {
+    list-style: none;
+    padding: 0;
+  }
 
-      img {
-        margin-top: 1em;
-        border-radius: 5px;
-      }
-    </style>
-  </head>
-  <body>
-    <header>
-      <h1>All Workout Logs</h1>
-    </header>
-    <div class="container">
-      <% if (logs.length === 0) { %>
-      <p>No workout logs found.</p>
-      <% } else { %>
-      <ul>
-        <% logs.forEach((log) => { %>
-        <li>
-          <strong><%= log.title %></strong> by <%= log.username %>
-          <p>
-            Exercise: <%= log.exercise %>, Duration: <%= log.duration %> minutes
-          </p>
-          <p>Date: <%= log.date.toDateString() %></p>
-          <p>Description: <%= log.description %></p>
-          <% if (log.image) { %>
-          <img
-            src="/uploads/<%= log.image %>"
-            alt="Workout Image"
-            width="200"
-          />
-          <% } %>
-          <form action="/home/workout-log/<%= log._id %>/delete" method="POST">
-            <button type="submit">Delete</button>
+  li {
+    margin: 1.5em 0; /* 목록 간 간격 */
+    padding: 1.5em;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.3s;
+  }
+
+  li:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  strong {
+    display: block;
+    font-size: 1.2rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+    color: #555;
+  }
+
+  img {
+    display: block;
+    margin: 1rem auto;
+    border-radius: 5px;
+    width: 80%;
+    max-width: 500px;
+    height: auto;
+  }
+
+  /* 공통 버튼 스타일 */
+  .btn {
+    display: inline-block;
+    padding: 0.8rem 1.5rem;
+    background-color: #007bff; /* 기본 파란색 */
+    color: white;
+    text-decoration: none;
+    font-size: 1rem;
+    border-radius: 5px;
+    font-weight: bold;
+    text-align: center;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .btn:hover {
+    background-color: #0056b3;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  /* 버튼 그룹 컨테이너 */
+  .btn-group {
+    display: flex;
+    gap: 1rem;
+    justify-content: center; /* 중앙 정렬 */
+    margin-top: 1rem;
+  }
+</style>
+
+<main class="main">
+  <!-- 제목과 버튼 영역 -->
+  <div class="header-controls">
+    <h1>All Workout Logs</h1>
+    <a href="/home/workout-log/new" class="add-log-btn">Add New Workout Log</a>
+  </div>
+
+  <!-- 스크롤 가능한 컨텐츠 영역 -->
+  <div class="container">
+    <% if (logs.length === 0) { %>
+    <p class="no-logs">No workout logs found.</p>
+    <% } else { %>
+    <ul>
+      <% logs.forEach((log) => { %>
+      <li>
+        <strong><%= log.title %></strong> by <%= log.username %>
+        <p>
+          Exercise: <%= log.exercise %>, Duration: <%= log.duration %> minutes
+        </p>
+        <p>Date: <%= log.date.toDateString() %></p>
+        <p>Description: <%= log.description %></p>
+        <% if (log.image) { %>
+        <img src="/uploads/<%= log.image %>" alt="Workout Image" />
+        <% } %> <% if (user.role === 'admin' || user.username === log.username)
+        { %>
+        <div class="btn-group">
+          <form
+            action="/home/workout-log/<%= log._id %>/delete"
+            method="POST"
+            style="display: inline"
+          >
+            <button type="submit" class="btn">Delete</button>
           </form>
-        </li>
-        <% }); %>
-      </ul>
-      <% } %>
-
-      <!-- Add Log Button -->
-      <a href="/home/workout-log/new" class="add-log-btn"
-        >Add New Workout Log</a
-      >
-    </div>
-  </body>
-</html>
+          <a href="/home/workout-log/<%= log._id %>/edit" class="btn">Edit</a>
+        </div>
+        <% } %>
+      </li>
+      <% }); %>
+    </ul>
+    <% } %>
+  </div>
+</main>

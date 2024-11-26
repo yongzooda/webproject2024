@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title %> | FitConnect</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <style>
+      body {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      header {
+        background: #333 !important; /* 상단바 배경색 강제 적용 */
+        color: white !important; /* 상단바 텍스트 색 강제 적용 */
+        font-size: 1.5rem !important; /* 상단바 폰트 크기 고정 */
+        padding: 1rem 3rem; /* Increased padding for more space */
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        width: 100%;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      }
+
+      header .logo {
+        flex: 1; /* Take up remaining space */
+        display: flex;
+        justify-content: flex-start; /* Align logo to the left */
+      }
+
+      header .logo h1 {
+        margin: 0;
+        font-size: 2rem; /* Increased font size */
+        font-weight: 600;
+        padding-left: 1rem; /* Added padding for spacing */
+      }
+
+      header .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      header .user-info {
+        font-size: 0.9rem;
+      }
+
+      header a {
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+      }
+
+      header a:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+
+      main {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem;
+        padding-top: 80px; /* 상단바와의 간격 조정 */
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="logo">
+        <h1>FitConnect</h1>
+      </div>
+      <div class="nav-links">
+        <span>현재 페이지: <%= currentPage %></span>
+        <span class="user-info">
+          <% if (user && user.username) { %> <%= user.username %>님, 환영합니다!
+          <% } else { %> 방문자님, 로그인해주세요. <% } %>
+        </span>
+        <a href="<%= user ? '/logout' : '/login' %>">
+          <%= user ? 'Logout' : 'Login' %>
+        </a>
+      </div>
+    </header>
+    <main><%- body %></main>
+  </body>
+</html>

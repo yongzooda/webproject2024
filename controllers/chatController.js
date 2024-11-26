@@ -11,7 +11,12 @@ exports.getChatRooms = async (req, res) => {
 
   try {
     const chatRooms = await ChatRoom.find(); // 모든 채팅방 조회
-    res.render('chat-rooms', { chatRooms }); // chat-rooms.ejs 렌더링
+    res.render('chat-rooms', {
+      chatRooms,
+      user: req.user, // 사용자 정보 전달
+      title: 'chat rooms(관리자용)', // 페이지 제목
+      currentPage: 'chat rooms(관리자용)', // 현재 페이지 이름
+    }); // chat-rooms.ejs 렌더링
   } catch (error) {
     console.error('Error fetching chat rooms:', error);
     res.status(500).send('Error fetching chat rooms');

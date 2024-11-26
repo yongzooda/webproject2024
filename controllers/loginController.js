@@ -6,7 +6,11 @@ const jwtSecret = process.env.JWT_SECRET; // JWT 서명용 비밀 키
 
 // 로그인 페이지 렌더링
 exports.getLoginPage = (req, res) => {
-  res.render('login');
+  res.render('login', {
+    user: null, // user 변수를 명시적으로 null로 설정,
+    title: 'Login',
+    currentPage: 'Login',
+  });
 };
 
 // 로그인 처리
