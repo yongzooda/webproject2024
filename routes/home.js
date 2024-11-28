@@ -140,9 +140,11 @@ router.patch(
 /// 챌린지 페이지 라우트 추가
 router.get('/challenges', authenticateJWT, challengeController.getChallenges);
 // 그룹 챌린지 페이지로 이동 (구현 예정)
-router.get('/challenges/group-challenges', authenticateJWT, (req, res) => {
-  res.send('Group Challenges Page (To be implemented)');
-});
+router.get(
+  '/challenges/group-challenges',
+  authenticateJWT,
+  challengeController.getGroupChallenges
+);
 
 // 실시간 상담 라우트
 router.get('/live-chat', authenticateJWT, (req, res) => {

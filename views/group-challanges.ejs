@@ -1,0 +1,111 @@
+<style>
+  .leaderboard-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin: 2rem;
+  }
+
+  .leaderboard-section {
+    padding: 1.5rem;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .leaderboard-section h2 {
+    font-size: 1.5rem;
+    color: #007bff;
+    margin-bottom: 1rem;
+  }
+
+  .leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .leaderboard-table th,
+  .leaderboard-table td {
+    padding: 0.5rem;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .leaderboard-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+  }
+
+  .leaderboard-table tr:hover {
+    background-color: #f9f9f9;
+  }
+</style>
+
+<div class="leaderboard-container">
+  <div class="leaderboard-section">
+    <h2>성실성 랭킹</h2>
+    <table class="leaderboard-table">
+      <thead>
+        <tr>
+          <th>순위</th>
+          <th>회원명</th>
+          <th>일지 합계</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% rankings.combined.forEach((user, index) => { %>
+        <tr>
+          <td><%= index + 1 %></td>
+          <td><%= user.username %></td>
+          <td><%= user.totalLogs %></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="leaderboard-section">
+    <h2>노력 랭킹 (운동시간)</h2>
+    <table class="leaderboard-table">
+      <thead>
+        <tr>
+          <th>순위</th>
+          <th>회원명</th>
+          <th>총 운동시간 (분)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% rankings.workoutTime.forEach((user, index) => { %>
+        <tr>
+          <td><%= index + 1 %></td>
+          <td><%= user.username %></td>
+          <td><%= user.totalWorkoutTime %></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="leaderboard-section">
+    <h2>식단 점수 랭킹</h2>
+    <table class="leaderboard-table">
+      <thead>
+        <tr>
+          <th>순위</th>
+          <th>회원명</th>
+          <th>식단 점수</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% rankings.dietScore.forEach((user, index) => { %>
+        <tr>
+          <td><%= index + 1 %></td>
+          <td><%= user.username %></td>
+          <td><%= user.totalDietScore %></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
