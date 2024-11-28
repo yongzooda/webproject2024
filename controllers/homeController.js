@@ -21,15 +21,6 @@ exports.getNearbyGymsPage = (req, res) => {
   });
 };
 
-// 그룹 챌린지 페이지 렌더링
-exports.getGroupChallenges = (req, res) => {
-  res.render('group-challenges', {
-    user: req.user || null,
-    title: 'Group Challenges',
-    currentPage: 'Group Challenges',
-  });
-};
-
 // 실시간 상담 페이지 렌더링
 exports.getLiveChat = (req, res) => {
   if (req.user && req.user.role === 'admin') {

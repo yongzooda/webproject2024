@@ -8,6 +8,7 @@ const path = require('path');
 const multer = require('multer');
 const workoutLogController = require('../controllers/workoutLogController');
 const dietLogController = require('../controllers/dietLogController');
+const challengeController = require('../controllers/challengeController');
 
 const authenticateJWT = require('../middlewares/auth');
 
@@ -136,12 +137,12 @@ router.patch(
   dietLogController.editComment
 ); // 댓글 수정
 
-// 그룹 챌린지 페이지 라우트
-router.get(
-  '/group-challenges',
-  authenticateJWT,
-  homeController.getGroupChallenges
-);
+/// 챌린지 페이지 라우트 추가
+router.get('/challenges', authenticateJWT, challengeController.getChallenges);
+// 그룹 챌린지 페이지로 이동 (구현 예정)
+router.get('/challenges/group-challenges', authenticateJWT, (req, res) => {
+  res.send('Group Challenges Page (To be implemented)');
+});
 
 // 실시간 상담 라우트
 router.get('/live-chat', authenticateJWT, (req, res) => {

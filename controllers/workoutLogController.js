@@ -33,8 +33,10 @@ exports.addWorkoutLog = async (req, res) => {
   const { username, title, exercise, duration, date, description } = req.body;
   const image = req.file ? req.file.filename : null;
 
+  console.log('User Info:', req.user._id);
   try {
     const newLog = await WorkoutLog.create({
+      userId: req.user._id,
       username: req.user.username, // JWT에서 가져온 사용자명
       title,
       exercise,

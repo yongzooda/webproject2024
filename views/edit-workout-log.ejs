@@ -1,92 +1,162 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Edit Workout Log</title>
-    <link rel="stylesheet" href="/styles.css" />
-  </head>
-  <body>
-    <header>
-      <h1>Edit Workout Log</h1>
-    </header>
-    <main>
-      <form
-        action="/home/workout-log/<%= log._id %>/edit"
-        method="POST"
-        enctype="multipart/form-data"
-      >
-        <div>
-          <label for="username">Name:</label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            value="<%= log.username %>"
-            readonly
-          />
-        </div>
-        <div>
-          <label for="title">Title:</label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            value="<%= log.title %>"
-            required
-          />
-        </div>
-        <div>
-          <label for="exercise">Exercise:</label>
-          <input
-            type="text"
-            id="exercise"
-            name="exercise"
-            value="<%= log.exercise %>"
-            required
-          />
-        </div>
-        <div>
-          <label for="duration">Duration (minutes):</label>
-          <input
-            type="number"
-            id="duration"
-            name="duration"
-            value="<%= log.duration %>"
-            required
-          />
-        </div>
-        <div>
-          <label for="date">Date:</label>
-          <input
-            type="date"
-            id="date"
-            name="date"
-            value="<%= log.date.toISOString().split('T')[0] %>"
-            required
-          />
-        </div>
-        <div>
-          <label for="description">Description:</label>
-          <textarea id="description" name="description" rows="5" required>
+<main>
+  <style>
+    /* edit-workout-log.ejs 전용 스타일 */
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      margin-top: 17rem; /* 상단바와 간격 확보 */
+      width: 100%;
+      max-width: 800px; /* 중앙 정렬과 적절한 너비 */
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px; /* 제목과 폼 사이 간격 */
+      font-size: 2rem;
+      font-weight: bold;
+    }
+
+    form {
+      width: 100%;
+    }
+
+    form div {
+      margin-bottom: 20px;
+    }
+
+    form label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    form input,
+    form textarea {
+      width: 100%;
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+
+    form button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    form button:hover {
+      background-color: #45a049;
+    }
+
+    form img {
+      display: block;
+      margin-top: 10px;
+      max-width: 200px;
+      height: auto;
+      border-radius: 5px;
+    }
+  </style>
+
+  <h1>운동일지 수정</h1>
+
+  <form
+    action="/home/workout-log/<%= log._id %>/edit"
+    method="POST"
+    enctype="multipart/form-data"
+  >
+    <!-- 작성자 -->
+    <div>
+      <label for="username">Name:</label>
+      <input
+        type="text"
+        id="username"
+        name="username"
+        value="<%= log.username %>"
+        readonly
+      />
+    </div>
+
+    <!-- 제목 -->
+    <div>
+      <label for="title">Title:</label>
+      <input
+        type="text"
+        id="title"
+        name="title"
+        value="<%= log.title %>"
+        required
+      />
+    </div>
+
+    <!-- 운동 이름 -->
+    <div>
+      <label for="exercise">Exercise:</label>
+      <input
+        type="text"
+        id="exercise"
+        name="exercise"
+        value="<%= log.exercise %>"
+        required
+      />
+    </div>
+
+    <!-- 운동 시간 -->
+    <div>
+      <label for="duration">Duration (minutes):</label>
+      <input
+        type="number"
+        id="duration"
+        name="duration"
+        value="<%= log.duration %>"
+        required
+      />
+    </div>
+
+    <!-- 날짜 -->
+    <div>
+      <label for="date">Date:</label>
+      <input
+        type="date"
+        id="date"
+        name="date"
+        value="<%= log.date.toISOString().split('T')[0] %>"
+        required
+      />
+    </div>
+
+    <!-- 설명 -->
+    <div>
+      <label for="description">Description:</label>
+      <textarea id="description" name="description" rows="5" required>
 <%= log.description %></textarea
-          >
-        </div>
-        <div>
-          <label for="image">Image:</label>
-          <% if (log.image) { %>
-          <div>
-            <img
-              src="/uploads/<%= log.image %>"
-              alt="Current Workout Image"
-              style="width: 200px; height: auto"
-            />
-          </div>
-          <% } %>
-          <input type="file" id="image" name="image" />
-        </div>
-        <button type="submit">Update Log</button>
-      </form>
-    </main>
-  </body>
-</html>
+      >
+    </div>
+
+    <!-- 이미지 -->
+    <div>
+      <label for="image">Image:</label>
+      <% if (log.image) { %>
+      <div>
+        <img src="/uploads/<%= log.image %>" alt="Current Workout Image" />
+      </div>
+      <% } %>
+      <input type="file" id="image" name="image" />
+    </div>
+
+    <!-- 제출 버튼 -->
+    <button type="submit">Update Log</button>
+  </form>
+</main>

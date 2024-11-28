@@ -50,6 +50,8 @@ exports.getChatRoom = async (req, res) => {
     res.render('chat-room', {
       chatRoom,
       user: req.user,
+      title: 'chat room', // 페이지 제목
+      currentPage: 'chat room', // 현재 페이지 이름
       token: req.cookies.token, // JWT 토큰 전달
     });
   } catch (error) {

@@ -1,0 +1,109 @@
+<main>
+  <style>
+    main {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .challenges-header {
+      text-align: center;
+      margin: 2rem 0;
+    }
+
+    .challenges-header h1 {
+      font-size: 2.5rem;
+      color: #333;
+    }
+
+    .challenges-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 2rem;
+      gap: 2rem;
+    }
+
+    .user-stats {
+      flex: 1;
+      max-width: 60%;
+    }
+
+    .user-stat {
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      background-color: white;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .user-stat h3 {
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+      color: #007bff;
+    }
+
+    .user-stat .stat-number {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #333;
+      margin-top: 0.5rem;
+    }
+
+    .user-stat .stat-label {
+      font-size: 1.2rem;
+      color: #666;
+    }
+
+    .challenge-btn-container {
+      flex: 0 0 20%;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .challenge-btn {
+      padding: 1rem 2rem;
+      font-size: 1.2rem;
+      color: white;
+      background-color: #007bff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .challenge-btn:hover {
+      background-color: #0056b3;
+    }
+  </style>
+
+  <div class="challenges-header">
+    <h1>Challenges</h1>
+  </div>
+
+  <div class="challenges-container">
+    <div class="user-stats">
+      <% userStats.forEach((stat) => { %>
+      <div class="user-stat">
+        <h3><%= stat.userId %></h3>
+        <div>
+          <span class="stat-number"><%= stat.workouts %></span>
+          <span class="stat-label">Workouts</span>
+        </div>
+        <div>
+          <span class="stat-number"><%= stat.diets %></span>
+          <span class="stat-label">Diets</span>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+
+    <div class="challenge-btn-container">
+      <a href="/home/group-challenges">
+        <button class="challenge-btn">Go to Group Challenges</button>
+      </a>
+    </div>
+  </div>
+</main>

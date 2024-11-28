@@ -1,12 +1,14 @@
 const mongoose = require('mongoose');
 
 const commentSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // 사용자 ID 추가
   username: { type: String, required: true },
   text: { type: String, required: true },
   date: { type: Date, default: Date.now },
 });
 
 const workoutLogSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // 사용자 ID 추가
   username: { type: String, required: true },
   title: { type: String, required: true },
   exercise: { type: String, required: true },

@@ -1,120 +1,113 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Live Chat</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-        background: #f4f4f9;
-      }
+<main>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: #f4f4f9;
+    }
 
-      #chat-box {
-        width: 80%;
-        height: 70%;
-        overflow-y: auto;
-        border: 1px solid #ccc;
-        padding: 10px;
-        background: white;
-        margin-bottom: 20px;
-        display: flex;
-        flex-direction: column;
-      }
+    #chat-box {
+      width: 80%;
+      height: 70%;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      padding: 10px;
+      background: white;
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+    }
 
-      .message {
-        margin: 5px 0;
-        padding: 10px;
-        border-radius: 10px;
-        max-width: 60%;
-      }
+    .message {
+      margin: 5px 0;
+      padding: 10px;
+      border-radius: 10px;
+      max-width: 60%;
+    }
 
-      .message.user {
-        align-self: flex-end;
-        background-color: #007bff;
-        color: white;
-      }
+    .message.user {
+      align-self: flex-end;
+      background-color: #007bff;
+      color: white;
+    }
 
-      .message.admin {
-        align-self: flex-start;
-        background-color: #f1f1f1;
-        color: black;
-      }
+    .message.admin {
+      align-self: flex-start;
+      background-color: #f1f1f1;
+      color: black;
+    }
 
-      form {
-        display: flex;
-        width: 80%;
-      }
+    form {
+      display: flex;
+      width: 80%;
+    }
 
-      input[type='text'] {
-        flex: 1;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-      }
+    input[type='text'] {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
 
-      button {
-        padding: 10px 20px;
-        background: #007bff;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-      }
+    button {
+      padding: 10px 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
 
-      button:hover {
-        background: #0056b3;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="chat-box">
-      <!-- 채팅 메시지가 여기에 추가됩니다 -->
-    </div>
-    <form id="chat-form">
-      <input
-        type="text"
-        id="message-input"
-        placeholder="Type your message..."
-        required
-      />
-      <button type="submit">Send</button>
-    </form>
+    button:hover {
+      background: #0056b3;
+    }
+  </style>
 
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-      const socket = io();
-      const role = '<%= role %>'; // 서버에서 전달받은 사용자 역할
-      const chatBox = document.getElementById('chat-box');
-      const chatForm = document.getElementById('chat-form');
-      const messageInput = document.getElementById('message-input');
+  <div id="chat-box">
+    <!-- 채팅 메시지가 여기에 추가됩니다 -->
+  </div>
+  <form id="chat-form">
+    <input
+      type="text"
+      id="message-input"
+      placeholder="Type your message..."
+      required
+    />
+    <button type="submit">Send</button>
+  </form>
 
-      // 메시지 전송
-      chatForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const message = {
-          text: messageInput.value,
-          role, // 사용자 역할 전달
-        };
-        socket.emit('chat message', message); // 서버에 메시지 전송
-        messageInput.value = ''; // 입력창 초기화
-      });
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const role = '<%= role %>'; // 서버에서 전달받은 사용자 역할
+    const chatBox = document.getElementById('chat-box');
+    const chatForm = document.getElementById('chat-form');
+    const messageInput = document.getElementById('message-input');
 
-      // 메시지 수신 및 표시
-      socket.on('chat message', (msg) => {
-        const messageElement = document.createElement('div');
-        messageElement.textContent = msg.text;
-        messageElement.classList.add('message', msg.role); // 역할에 따라 스타일 지정
-        chatBox.appendChild(messageElement); // 메시지를 채팅 박스에 추가
-        chatBox.scrollTop = chatBox.scrollHeight; // 스크롤 자동 이동
-      });
-    </script>
-  </body>
-</html>
+    // 메시지 전송
+    chatForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const message = {
+        text: messageInput.value,
+        role, // 사용자 역할 전달
+      };
+      socket.emit('chat message', message); // 서버에 메시지 전송
+      messageInput.value = ''; // 입력창 초기화
+    });
+
+    // 메시지 수신 및 표시
+    socket.on('chat message', (msg) => {
+      const messageElement = document.createElement('div');
+      messageElement.textContent = msg.text;
+      messageElement.classList.add('message', msg.role); // 역할에 따라 스타일 지정
+      chatBox.appendChild(messageElement); // 메시지를 채팅 박스에 추가
+      chatBox.scrollTop = chatBox.scrollHeight; // 스크롤 자동 이동
+    });
+  </script>
+</main>

@@ -35,6 +35,7 @@ exports.addDietLog = async (req, res) => {
 
   try {
     const newLog = await DietLog.create({
+      userId: req.user._id,
       username: req.user.username, // JWT에서 가져온 사용자명
       title: `${req.user.username}'s Meal`, // 자동 생성된 제목
       foodName,

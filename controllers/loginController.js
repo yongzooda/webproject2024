@@ -1,4 +1,4 @@
-const User = require('../models/User');
+const User = require('../models/user');
 const bcrypt = require('bcrypt');
 
 const jwt = require('jsonwebtoken');
@@ -39,7 +39,7 @@ exports.handleLogin = async (req, res) => {
 
     // JWT 생성
     const token = jwt.sign(
-      { username: user.username, role: user.role }, // JWT 페이로드
+      { _id: user._id, username: user.username, role: user.role }, // JWT 페이로드
       process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );

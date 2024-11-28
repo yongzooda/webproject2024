@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 // 댓글 스키마 (공통 사용)
 const commentSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // 사용자 ID 추가
   username: { type: String, required: true },
   text: { type: String, required: true },
   date: { type: Date, default: Date.now },
@@ -9,6 +10,7 @@ const commentSchema = new mongoose.Schema({
 
 // 식단 일지 스키마
 const dietLogSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // 사용자 ID 추가
   username: { type: String, required: true }, // 작성자
   title: { type: String, required: true }, // 식단 제목
   foodName: { type: String, required: true }, // 음식명
