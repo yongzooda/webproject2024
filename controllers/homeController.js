@@ -21,15 +21,6 @@ exports.getNearbyGymsPage = (req, res) => {
   });
 };
 
-// 식단 일지 페이지 렌더링
-exports.getDietLog = (req, res) => {
-  res.render('diet-log', {
-    user: req.user || null,
-    title: 'Diet Log',
-    currentPage: 'Diet Log',
-  });
-};
-
 // 그룹 챌린지 페이지 렌더링
 exports.getGroupChallenges = (req, res) => {
   res.render('group-challenges', {

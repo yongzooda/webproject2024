@@ -7,6 +7,7 @@ const gymController = require('../controllers/gymController');
 const path = require('path');
 const multer = require('multer');
 const workoutLogController = require('../controllers/workoutLogController');
+const dietLogController = require('../controllers/dietLogController');
 
 const authenticateJWT = require('../middlewares/auth');
 
@@ -33,6 +34,7 @@ const storage = multer.diskStorage({
   },
 });
 const upload = multer({ storage }); // multer 인스턴스 생성
+
 // 운동 일지 페이지 라우트
 router.get(
   '/workout-logs',
@@ -89,7 +91,50 @@ router.patch(
 ); // 댓글 수정
 
 // 식단 일지 페이지 라우트
-router.get('/diet-log', authenticateJWT, homeController.getDietLog);
+router.get('/diet-logs', authenticateJWT, dietLogController.getDietLogs); // 식단 일지 목록
+router.get(
+  '/diet-log/new',
+  authenticateJWT,
+  dietLogController.getAddDietLogPage
+); // 식단 일지 작성 폼
+router.post('/diet-log', upload.single('image'), dietLogController.addDietLog); // 식단 일지 작성
+router.get(
+  '/diet-log/:id/edit',
+  authenticateJWT,
+  dietLogController.getEditDietLogPage
+); // 식단 일지 수정 폼
+
+router.post(
+  '/diet-log/:id/edit',
+  authenticateJWT,
+  upload.single('image'),
+  dietLogController.editDietLog
+); // 식단 일지 수정
+
+router.post(
+  '/diet-log/:id/delete',
+  authenticateJWT,
+  dietLogController.deleteDietLog
+); // 식단 일지 삭제
+
+// 댓글 관련 라우트 추가
+router.post(
+  '/diet-log/:id/comments',
+  authenticateJWT,
+  dietLogController.addComment
+); // 댓글 추가
+
+router.delete(
+  '/diet-log/:id/comments/:commentId',
+  authenticateJWT,
+  dietLogController.deleteComment
+); // 댓글 삭제
+
+router.patch(
+  '/diet-log/:id/comments/:commentId',
+  authenticateJWT,
+  dietLogController.editComment
+); // 댓글 수정
 
 // 그룹 챌린지 페이지 라우트
 router.get(
