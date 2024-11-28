@@ -1,6 +1,6 @@
-const WorkoutLog = require('../models/WorkoutLog');
+//workoutLogController.js
 
-const logs = []; // 임시 데이터베이스 (나중에 실제 DB로 대체)
+const WorkoutLog = require('../models/WorkoutLog');
 
 // 운동 일지 작성 페이지 렌더링
 exports.getAddWorkoutLogPage = (req, res) => {
@@ -139,5 +139,105 @@ exports.deleteWorkoutLog = async (req, res) => {
   } catch (error) {
     console.error('Error deleting workout log:', error);
     res.status(500).send('Error deleting workout log');
+  }
+};
+
+// 댓글 작성 (AJAX 대응)
+exports.addComment = async (req, res) => {
+  const { id } = req.params;
+  const { text } = req.body;
+
+  try {
+    const log = await WorkoutLog.findById(id);
+    if (!log) return res.status(404).json({ error: 'Workout log not found' });
+
+    const newComment = { username: req.user.username, text, date: new Date() };
+    log.comments.push(newComment);
+    await log.save();
+
+    res.status(200).json({
+      success: true,
+      comment: {
+        ...newComment,
+        _id: log.comments[log.comments.length - 1]._id,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Error adding comment' });
+  }
+};
+
+// 댓글 수정 (AJAX 대응)
+exports.editComment = async (req, res) => {
+  const { id, commentId } = req.params;
+  const { text } = req.body;
+
+  try {
+    console.log('Incoming Params:', req.params);
+    console.log('Incoming Body:', req.body);
+
+    const log = await WorkoutLog.findById(id);
+    if (!log) {
+      console.error('Workout log not found');
+      return res.status(404).json({ error: 'Workout log not found' });
+    }
+
+    const comment = log.comments.id(commentId);
+    if (!comment) {
+      console.error('Comment not found');
+      return res.status(404).json({ error: 'Comment not found' });
+    }
+
+    if (req.user.role !== 'admin' && comment.username !== req.user.username) {
+      console.error('Unauthorized access');
+      return res.status(403).json({ error: 'Unauthorized' });
+    }
+
+    comment.text = text;
+    comment.date = new Date();
+    await log.save();
+
+    console.log('Updated Comment:', comment);
+
+    res.status(200).json({ success: true, comment });
+  } catch (error) {
+    console.error('Error editing comment:', error);
+    res.status(500).json({ error: 'Error editing comment' });
+  }
+};
+
+// 댓글 삭제 (AJAX 대응)
+exports.deleteComment = async (req, res) => {
+  const { id, commentId } = req.params;
+
+  console.log('Delete Comment Params:', req.params);
+
+  try {
+    const log = await WorkoutLog.findById(id);
+    if (!log) {
+      console.error('Workout log not found');
+      return res.status(404).json({ error: 'Workout log not found' });
+    }
+
+    // comments 배열에서 해당 commentId 삭제
+    const commentIndex = log.comments.findIndex(
+      (c) => c._id.toString() === commentId
+    );
+    if (commentIndex === -1) {
+      console.error('Comment not found');
+      return res.status(404).json({ error: 'Comment not found' });
+    }
+
+    // 배열에서 제거
+    log.comments.splice(commentIndex, 1);
+
+    await log.save(); // 변경 사항 저장
+
+    console.log('Deleted Comment ID:', commentId);
+
+    res.status(200).json({ success: true, commentId });
+  } catch (error) {
+    console.error('Error deleting comment:', error);
+    res.status(500).json({ error: 'Error deleting comment' });
   }
 };

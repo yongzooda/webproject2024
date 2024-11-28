@@ -1,5 +1,5 @@
 <style>
-  /* 상단바와 메인 컨텐츠 간 간격 확보 */
+  /* 기존 스타일 유지 */
   .main {
     margin-top: 4rem;
     padding: 1rem;
@@ -107,7 +107,7 @@
   }
 
   .comment {
-    position: relative; /* DOM에서 위치 변경 가능 */
+    position: relative;
     padding: 0.5rem;
     margin-bottom: 0.5rem;
     border-bottom: 1px solid #ddd;
@@ -115,7 +115,7 @@
   }
   .comment.removing {
     opacity: 0;
-    transform: translateY(-10px); /* 삭제 시 애니메이션 */
+    transform: translateY(-10px);
   }
 
   .comment strong {
@@ -159,36 +159,39 @@
 
 <main class="main">
   <div class="header-controls">
-    <h1>All Workout Logs</h1>
-    <a href="/home/workout-log/new" class="add-log-btn">Add New Workout Log</a>
+    <h1>All Diet Logs</h1>
+    <a href="/home/diet-log/new" class="add-log-btn">Add New Diet Log</a>
   </div>
 
   <div class="container">
     <% if (logs.length === 0) { %>
-    <p class="no-logs">No workout logs found.</p>
+    <p class="no-logs">No diet logs found.</p>
     <% } else { %>
     <ul>
       <% logs.forEach((log) => { %>
       <li>
         <strong><%= log.title %></strong> by <%= log.username %>
+        <p>Food: <%= log.foodName %>, Calories: <%= log.calories %> kcal</p>
+        <p>Meal Time: <%= new Date(log.mealTime).toLocaleString() %></p>
         <p>
-          Exercise: <%= log.exercise %>, Duration: <%= log.duration %> minutes
+          Nutrition: Carbs: <%= log.nutrition.carbs %>g, Protein: <%=
+          log.nutrition.protein %>g, Fat: <%= log.nutrition.fat %>g, Sugar: <%=
+          log.nutrition.sugar %>g, Sodium: <%= log.nutrition.sodium %>mg
         </p>
-        <p>Date: <%= log.date.toDateString() %></p>
         <p>Description: <%= log.description %></p>
         <% if (log.image) { %>
-        <img src="/uploads/<%= log.image %>" alt="Workout Image" />
+        <img src="/uploads/<%= log.image %>" alt="Diet Image" />
         <% } %> <% if (user.role === 'admin' || user.username === log.username)
         { %>
         <div class="btn-group">
           <form
-            action="/home/workout-log/<%= log._id %>/delete"
+            action="/home/diet-log/<%= log._id %>/delete"
             method="POST"
             style="display: inline"
           >
             <button type="submit" class="btn">Delete</button>
           </form>
-          <a href="/home/workout-log/<%= log._id %>/edit" class="btn">Edit</a>
+          <a href="/home/diet-log/<%= log._id %>/edit" class="btn">Edit</a>
         </div>
         <% } %>
 
@@ -237,112 +240,3 @@
     <% } %>
   </div>
 </main>
-
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    // 댓글 추가
-    document.querySelectorAll('.comment-form').forEach((form) => {
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const logId = form.dataset.logId;
-        const text = form.querySelector("input[name='text']").value;
-
-        const response = await fetch(`/home/workout-log/${logId}/comments`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text }),
-        });
-
-        if (response.ok) {
-          const { comment } = await response.json();
-          const commentsContainer = document.getElementById(
-            `comments-${logId}`
-          );
-          commentsContainer.innerHTML += `
-          <div class="comment" id="comment-${comment._id}">
-            <strong>${comment.username}</strong> - ${new Date(
-            comment.date
-          ).toLocaleString()}
-            <p>${comment.text}</p>
-            <button class="btn edit-comment-btn" data-log-id="${logId}" data-comment-id="${
-            comment._id
-          }">Edit</button>
-            <button class="btn delete-comment-btn" data-log-id="${logId}" data-comment-id="${
-            comment._id
-          }">Delete</button>
-          </div>
-        `;
-        }
-      });
-    });
-
-    // 댓글 삭제
-    document.addEventListener('click', async (e) => {
-      if (e.target.classList.contains('delete-comment-btn')) {
-        const logId = e.target.dataset.logId;
-        const commentId = e.target.dataset.commentId;
-
-        try {
-          const response = await fetch(
-            `/home/workout-log/${logId}/comments/${commentId}`,
-            {
-              method: 'DELETE',
-            }
-          );
-
-          if (response.ok) {
-            const commentElement = document.getElementById(
-              `comment-${commentId}`
-            );
-            if (commentElement) {
-              commentElement.classList.add('removing');
-              setTimeout(() => commentElement.remove(), 300);
-            }
-          } else {
-            const error = await response.json();
-            console.error('Delete failed:', error.error);
-            alert('Failed to delete comment. Please try again.');
-          }
-        } catch (err) {
-          console.error('Network error:', err);
-          alert('Network error while deleting comment.');
-        }
-      }
-    });
-
-    // 댓글 수정
-    document.addEventListener('click', async (e) => {
-      if (e.target.classList.contains('edit-comment-btn')) {
-        const logId = e.target.dataset.logId;
-        const commentId = e.target.dataset.commentId;
-        const commentElement = document.getElementById(`comment-${commentId}`);
-        const currentText = commentElement.querySelector('p').textContent;
-
-        const newText = prompt('Edit your comment:', currentText);
-        if (newText && newText !== currentText) {
-          const response = await fetch(
-            `/home/workout-log/${logId}/comments/${commentId}`,
-            {
-              method: 'PATCH',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ text: newText }),
-            }
-          );
-
-          if (response.ok) {
-            const { comment } = await response.json();
-            // DOM 업데이트
-            commentElement.querySelector('p').textContent = comment.text;
-            commentElement.querySelector(
-              'strong'
-            ).nextSibling.textContent = ` - ${new Date(
-              comment.date
-            ).toLocaleString()}`;
-          } else {
-            alert('Failed to update comment. Please try again.');
-          }
-        }
-      }
-    });
-  });
-</script>

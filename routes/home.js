@@ -62,7 +62,31 @@ router.post(
   workoutLogController.editWorkoutLog
 ); // 운동 일지 수정
 
-router.post('/workout-log/:id/delete', workoutLogController.deleteWorkoutLog); // 운동 일지 삭제
+router.post(
+  '/workout-log/:id/delete',
+  authenticateJWT,
+  workoutLogController.deleteWorkoutLog
+); // 운동 일지 삭제
+
+// 댓글 관련 라우트 추가
+router.post(
+  '/workout-log/:id/comments',
+  authenticateJWT,
+  workoutLogController.addComment
+); // 댓글 추가
+
+router.delete(
+  '/workout-log/:id/comments/:commentId',
+  authenticateJWT,
+  workoutLogController.deleteComment
+);
+// 댓글 삭제
+
+router.patch(
+  '/workout-log/:id/comments/:commentId',
+  authenticateJWT,
+  workoutLogController.editComment
+); // 댓글 수정
 
 // 식단 일지 페이지 라우트
 router.get('/diet-log', authenticateJWT, homeController.getDietLog);
