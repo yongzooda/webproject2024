@@ -61,7 +61,7 @@
     padding: 0;
   }
 
-  li {
+  ul li {
     margin: 1.5em 0;
     padding: 1.5em;
     border: 1px solid #ccc;
@@ -71,9 +71,27 @@
     transition: transform 0.2s, box-shadow 0.3s;
   }
 
-  li:hover {
+  ul li:hover {
     transform: scale(1.02);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .log-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .log-header strong {
+    font-size: 1.5rem;
+    color: #333;
+  }
+
+  .posted-on {
+    font-size: 0.9rem;
+    color: #777;
+    text-align: right;
   }
 
   strong {
@@ -170,7 +188,13 @@
     <ul>
       <% logs.forEach((log) => { %>
       <li>
-        <strong><%= log.title %></strong> by <%= log.username %>
+        <div class="log-header">
+          <strong><%= log.title %></strong>
+          <span class="posted-on"
+            >Posted On: <%= new Date(log.createdAt).toLocaleString() %></span
+          >
+        </div>
+        <p><strong>by <%= log.username %></strong></p>
         <p>Food: <%= log.foodName %>, Calories: <%= log.calories %> kcal</p>
         <p>Meal Time: <%= new Date(log.mealTime).toLocaleString() %></p>
         <p>
@@ -240,3 +264,112 @@
     <% } %>
   </div>
 </main>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // 댓글 추가
+    document.querySelectorAll('.comment-form').forEach((form) => {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const logId = form.dataset.logId;
+        const text = form.querySelector("input[name='text']").value;
+
+        const response = await fetch(`/home/diet-log/${logId}/comments`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text }),
+        });
+
+        if (response.ok) {
+          const { comment } = await response.json();
+          const commentsContainer = document.getElementById(
+            `comments-${logId}`
+          );
+          commentsContainer.innerHTML += `
+            <div class="comment" id="comment-${comment._id}">
+              <strong>${comment.username}</strong> - ${new Date(
+            comment.date
+          ).toLocaleString()}
+              <p>${comment.text}</p>
+              <button class="btn edit-comment-btn" data-log-id="${logId}" data-comment-id="${
+            comment._id
+          }">Edit</button>
+              <button class="btn delete-comment-btn" data-log-id="${logId}" data-comment-id="${
+            comment._id
+          }">Delete</button>
+            </div>
+          `;
+          form.querySelector("input[name='text']").value = ''; // 입력 필드 초기화
+        } else {
+          console.error('Failed to add comment');
+          alert('Failed to add comment. Please try again.');
+        }
+      });
+    });
+
+    // 댓글 삭제
+    document.addEventListener('click', async (e) => {
+      if (e.target.classList.contains('delete-comment-btn')) {
+        const logId = e.target.dataset.logId;
+        const commentId = e.target.dataset.commentId;
+
+        try {
+          const response = await fetch(
+            `/home/diet-log/${logId}/comments/${commentId}`,
+            { method: 'DELETE' }
+          );
+
+          if (response.ok) {
+            const commentElement = document.getElementById(
+              `comment-${commentId}`
+            );
+            if (commentElement) {
+              commentElement.classList.add('removing');
+              setTimeout(() => commentElement.remove(), 300); // DOM에서 제거
+            }
+          } else {
+            console.error('Delete failed');
+            alert('Failed to delete comment. Please try again.');
+          }
+        } catch (err) {
+          console.error('Network error:', err);
+          alert('Network error while deleting comment.');
+        }
+      }
+    });
+
+    // 댓글 수정
+    document.addEventListener('click', async (e) => {
+      if (e.target.classList.contains('edit-comment-btn')) {
+        const logId = e.target.dataset.logId;
+        const commentId = e.target.dataset.commentId;
+        const commentElement = document.getElementById(`comment-${commentId}`);
+        const currentText = commentElement.querySelector('p').textContent;
+
+        const newText = prompt('Edit your comment:', currentText);
+        if (newText && newText !== currentText) {
+          const response = await fetch(
+            `/home/diet-log/${logId}/comments/${commentId}`,
+            {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ text: newText }),
+            }
+          );
+
+          if (response.ok) {
+            const { comment } = await response.json();
+            commentElement.querySelector('p').textContent = comment.text;
+            commentElement.querySelector(
+              'strong'
+            ).nextSibling.textContent = ` - ${new Date(
+              comment.date
+            ).toLocaleString()}`;
+          } else {
+            alert('Failed to update comment. Please try again.');
+          }
+        }
+      }
+    });
+  });
+</script>

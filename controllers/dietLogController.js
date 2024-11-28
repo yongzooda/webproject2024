@@ -1,3 +1,5 @@
+//dietLogController.js
+
 const DietLog = require('../models/DietLog');
 
 // 식단 일지 작성 페이지 렌더링

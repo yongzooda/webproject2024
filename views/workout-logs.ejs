@@ -61,7 +61,7 @@
     padding: 0;
   }
 
-  li {
+  ul li {
     margin: 1.5em 0;
     padding: 1.5em;
     border: 1px solid #ccc;
@@ -71,9 +71,27 @@
     transition: transform 0.2s, box-shadow 0.3s;
   }
 
-  li:hover {
+  ul li:hover {
     transform: scale(1.02);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .log-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .log-header strong {
+    font-size: 1.5rem;
+    color: #333;
+  }
+
+  .posted-on {
+    font-size: 0.9rem;
+    color: #777;
+    text-align: right;
   }
 
   strong {
@@ -107,15 +125,16 @@
   }
 
   .comment {
-    position: relative; /* DOM에서 위치 변경 가능 */
+    position: relative;
     padding: 0.5rem;
     margin-bottom: 0.5rem;
     border-bottom: 1px solid #ddd;
     transition: opacity 0.3s ease, transform 0.3s ease;
   }
+
   .comment.removing {
     opacity: 0;
-    transform: translateY(-10px); /* 삭제 시 애니메이션 */
+    transform: translateY(-10px);
   }
 
   .comment strong {
@@ -170,7 +189,13 @@
     <ul>
       <% logs.forEach((log) => { %>
       <li>
-        <strong><%= log.title %></strong> by <%= log.username %>
+        <div class="log-header">
+          <strong><%= log.title %></strong>
+          <span class="posted-on"
+            >Posted On: <%= new Date(log.createdAt).toLocaleString() %></span
+          >
+        </div>
+        <p><strong>by <%= log.username %></strong></p>
         <p>
           Exercise: <%= log.exercise %>, Duration: <%= log.duration %> minutes
         </p>

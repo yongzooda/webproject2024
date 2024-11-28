@@ -15,6 +15,7 @@ const workoutLogSchema = new mongoose.Schema({
   description: { type: String, required: true },
   image: { type: String }, // 이미지 파일 이름 (선택 사항)
   comments: [commentSchema], // 댓글 필드 추가
+  createdAt: { type: Date, default: Date.now }, // 등록 시간
 });
 
 const WorkoutLog = mongoose.model('WorkoutLog', workoutLogSchema);

@@ -1,162 +1,219 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Edit Diet Log</title>
-    <link rel="stylesheet" href="/styles.css" />
-  </head>
-  <body>
-    <header>
-      <h1>Edit Diet Log</h1>
-    </header>
-    <main>
-      <form
-        action="/home/diet-log/<%= log._id %>/edit"
-        method="POST"
-        enctype="multipart/form-data"
-      >
-        <!-- 작성자 -->
-        <div>
-          <label for="username">Name:</label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            value="<%= log.username %>"
-            readonly
-          />
-        </div>
+<main>
+  <style>
+    /* edit-diet-log.ejs 전용 스타일 */
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      margin-top: 37rem; /* 상단바와 간격 확보 */
+      width: 100%;
+      max-width: 800px; /* 중앙 정렬과 적절한 너비 */
+      margin-left: auto;
+      margin-right: auto;
+    }
 
-        <!-- 제목 -->
-        <div>
-          <label for="title">Title:</label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            value="<%= log.title %>"
-            required
-          />
-        </div>
+    h1 {
+      text-align: center;
+      margin-bottom: 30px; /* 제목과 폼 사이 간격 */
+      font-size: 2rem;
+      font-weight: bold;
+    }
 
-        <!-- 음식명 -->
-        <div>
-          <label for="foodName">Food Name:</label>
-          <input
-            type="text"
-            id="foodName"
-            name="foodName"
-            value="<%= log.foodName %>"
-            required
-          />
-        </div>
+    form {
+      width: 100%;
+    }
 
-        <!-- 칼로리 -->
-        <div>
-          <label for="calories">Calories (kcal):</label>
-          <input
-            type="number"
-            id="calories"
-            name="calories"
-            value="<%= log.calories %>"
-            required
-          />
-        </div>
+    form div,
+    form fieldset {
+      margin-bottom: 20px;
+    }
 
-        <!-- 영양성분 -->
-        <fieldset>
-          <legend>Nutrition (per serving)</legend>
-          <div>
-            <label for="carbs">Carbohydrates (g):</label>
-            <input
-              type="number"
-              id="carbs"
-              name="nutrition[carbs]"
-              value="<%= log.nutrition.carbs %>"
-              required
-            />
-          </div>
-          <div>
-            <label for="protein">Protein (g):</label>
-            <input
-              type="number"
-              id="protein"
-              name="nutrition[protein]"
-              value="<%= log.nutrition.protein %>"
-              required
-            />
-          </div>
-          <div>
-            <label for="fat">Fat (g):</label>
-            <input
-              type="number"
-              id="fat"
-              name="nutrition[fat]"
-              value="<%= log.nutrition.fat %>"
-              required
-            />
-          </div>
-          <div>
-            <label for="sugar">Sugar (g):</label>
-            <input
-              type="number"
-              id="sugar"
-              name="nutrition[sugar]"
-              value="<%= log.nutrition.sugar %>"
-              required
-            />
-          </div>
-          <div>
-            <label for="sodium">Sodium (mg):</label>
-            <input
-              type="number"
-              id="sodium"
-              name="nutrition[sodium]"
-              value="<%= log.nutrition.sodium %>"
-              required
-            />
-          </div>
-        </fieldset>
+    form label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
 
-        <!-- 식사 시간 -->
-        <div>
-          <label for="mealTime">Meal Time:</label>
-          <input
-            type="datetime-local"
-            id="mealTime"
-            name="mealTime"
-            value="<%= new Date(log.mealTime).toISOString().slice(0, 16) %>"
-            required
-          />
-        </div>
+    form input,
+    form textarea,
+    form select {
+      width: 100%;
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
 
-        <!-- 설명 -->
-        <div>
-          <label for="description">Description:</label>
-          <textarea id="description" name="description" rows="5" required>
+    form button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    form button:hover {
+      background-color: #45a049;
+    }
+
+    form img {
+      display: block;
+      margin-top: 10px;
+      max-width: 200px;
+      height: auto;
+      border-radius: 5px;
+    }
+  </style>
+
+  <h1>식단일지 수정</h1>
+
+  <form
+    action="/home/diet-log/<%= log._id %>/edit"
+    method="POST"
+    enctype="multipart/form-data"
+  >
+    <!-- 작성자 -->
+    <div>
+      <label for="username">Name:</label>
+      <input
+        type="text"
+        id="username"
+        name="username"
+        value="<%= log.username %>"
+        readonly
+      />
+    </div>
+
+    <!-- 제목 -->
+    <div>
+      <label for="title">Title:</label>
+      <input
+        type="text"
+        id="title"
+        name="title"
+        value="<%= log.title %>"
+        required
+      />
+    </div>
+
+    <!-- 음식명 -->
+    <div>
+      <label for="foodName">Food Name:</label>
+      <input
+        type="text"
+        id="foodName"
+        name="foodName"
+        value="<%= log.foodName %>"
+        required
+      />
+    </div>
+
+    <!-- 칼로리 -->
+    <div>
+      <label for="calories">Calories (kcal):</label>
+      <input
+        type="number"
+        id="calories"
+        name="calories"
+        value="<%= log.calories %>"
+        required
+      />
+    </div>
+
+    <!-- 영양성분 -->
+    <fieldset>
+      <legend>Nutrition (per serving)</legend>
+      <div>
+        <label for="carbs">Carbohydrates (g):</label>
+        <input
+          type="number"
+          id="carbs"
+          name="nutrition[carbs]"
+          value="<%= log.nutrition.carbs %>"
+          required
+        />
+      </div>
+      <div>
+        <label for="protein">Protein (g):</label>
+        <input
+          type="number"
+          id="protein"
+          name="nutrition[protein]"
+          value="<%= log.nutrition.protein %>"
+          required
+        />
+      </div>
+      <div>
+        <label for="fat">Fat (g):</label>
+        <input
+          type="number"
+          id="fat"
+          name="nutrition[fat]"
+          value="<%= log.nutrition.fat %>"
+          required
+        />
+      </div>
+      <div>
+        <label for="sugar">Sugar (g):</label>
+        <input
+          type="number"
+          id="sugar"
+          name="nutrition[sugar]"
+          value="<%= log.nutrition.sugar %>"
+          required
+        />
+      </div>
+      <div>
+        <label for="sodium">Sodium (mg):</label>
+        <input
+          type="number"
+          id="sodium"
+          name="nutrition[sodium]"
+          value="<%= log.nutrition.sodium %>"
+          required
+        />
+      </div>
+    </fieldset>
+
+    <!-- 식사 시간 -->
+    <div>
+      <label for="mealTime">Meal Time:</label>
+      <input
+        type="datetime-local"
+        id="mealTime"
+        name="mealTime"
+        value="<%= new Date(log.mealTime).toISOString().slice(0, 16) %>"
+        required
+      />
+    </div>
+
+    <!-- 설명 -->
+    <div>
+      <label for="description">Description:</label>
+      <textarea id="description" name="description" rows="5" required>
 <%= log.description %></textarea
-          >
-        </div>
+      >
+    </div>
 
-        <!-- 이미지 -->
-        <div>
-          <label for="image">Image:</label>
-          <% if (log.image) { %>
-          <div>
-            <img
-              src="/uploads/<%= log.image %>"
-              alt="Current Diet Image"
-              style="width: 200px; height: auto"
-            />
-          </div>
-          <% } %>
-          <input type="file" id="image" name="image" />
-        </div>
+    <!-- 이미지 -->
+    <div>
+      <label for="image">Image:</label>
+      <% if (log.image) { %>
+      <div>
+        <img src="/uploads/<%= log.image %>" alt="Current Diet Image" />
+      </div>
+      <% } %>
+      <input type="file" id="image" name="image" />
+    </div>
 
-        <!-- 제출 버튼 -->
-        <button type="submit">Update Log</button>
-      </form>
-    </main>
-  </body>
-</html>
+    <!-- 제출 버튼 -->
+    <button type="submit">Update Log</button>
+  </form>
+</main>
