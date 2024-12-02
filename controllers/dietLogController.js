@@ -8,6 +8,7 @@ exports.getAddDietLogPage = (req, res) => {
     user: req.user, // 사용자 정보 전달
     title: 'Add Diet Log', // 페이지 제목
     currentPage: 'Add my diet log', // 현재 페이지 이름
+    referer: req.headers.referer || null, // 이전 페이지 URL 전달 (없을 경우 null)
   }); // 식단 일지 작성 폼 렌더링
 };
 
@@ -21,6 +22,7 @@ exports.getDietLogs = async (req, res) => {
       user: req.user, // 사용자 정보 전달
       title: 'Diet Logs', // 페이지 제목
       currentPage: 'Diet logs', // 현재 페이지 이름
+      referer: req.headers.referer || null, // 이전 페이지 URL 전달 (없을 경우 null)
     });
   } catch (error) {
     console.error('Error fetching diet logs:', error);
@@ -121,6 +123,7 @@ exports.getEditDietLogPage = async (req, res) => {
       user: req.user, // 사용자 정보 전달
       title: 'Edit Diet Log', // 페이지 제목
       currentPage: 'Edit Diet Log', // 현재 페이지 이름
+      referer: req.headers.referer || null, // 이전 페이지 URL 전달 (없을 경우 null)
     });
   } catch (error) {
     console.error('Error fetching diet log for editing:', error);

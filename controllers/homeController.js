@@ -9,6 +9,7 @@ exports.getMenuPage = (req, res) => {
     user: req.user || null,
     title: 'Home',
     currentPage: 'Home',
+    referer: req.headers.referer || null, // 이전 페이지 URL 전달 (없을 경우 null)
   });
 };
 
@@ -18,6 +19,7 @@ exports.getNearbyGymsPage = (req, res) => {
     user: req.user || null,
     title: 'Nearby Gyms',
     currentPage: 'Nearby Gyms',
+    referer: req.headers.referer || null, // 이전 페이지 URL 전달 (없을 경우 null)
   });
 };
 
@@ -44,5 +46,6 @@ exports.getHomePage = (req, res) => {
     user: req.user || null,
     title: 'Home',
     currentPage: 'Home',
+    referer: req.headers.referer || null, // 이전 페이지 URL 전달 (없을 경우 null)
   });
 };

@@ -8,6 +8,7 @@ exports.getAddWorkoutLogPage = (req, res) => {
     user: req.user, // 사용자 정보 전달
     title: 'add-workout-log', // 페이지 제목
     currentPage: 'Add my workout log', // 현재 페이지 이름
+    referer: req.headers.referer || null, // 이전 페이지 URL 전달 (없을 경우 null)
   }); // 운동 일지 작성 폼 렌더링
 };
 
@@ -21,6 +22,7 @@ exports.getWorkoutLogs = async (req, res) => {
       user: req.user, // 사용자 정보 전달
       title: 'workout-log', // 페이지 제목
       currentPage: 'workout logs', // 현재 페이지 이름
+      referer: req.headers.referer || null, // 이전 페이지 URL 전달 (없을 경우 null)
     });
   } catch (error) {
     console.error('Error fetching workout logs:', error);
@@ -118,6 +120,7 @@ exports.getEditWorkoutLogPage = async (req, res) => {
       user: req.user, // 사용자 정보 전달
       title: 'Edit Workout Log', // 페이지 제목
       currentPage: 'Edit Workout Log', // 현재 페이지 이름
+      referer: req.headers.referer || null, // 이전 페이지 URL 전달 (없을 경우 null)
     });
   } catch (error) {
     console.error('Error fetching workout log for editing:', error);

@@ -10,6 +10,7 @@ exports.getRegisterPage = (req, res) => {
     user: null, // user 변수를 명시적으로 null로 설정,
     title: 'Register',
     currentPage: 'Register',
+    referer: req.headers.referer || null, // 이전 페이지 URL 전달 (없을 경우 null)
   });
 };
 

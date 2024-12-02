@@ -16,6 +16,7 @@ exports.getChatRooms = async (req, res) => {
       user: req.user, // 사용자 정보 전달
       title: 'chat rooms(관리자용)', // 페이지 제목
       currentPage: 'chat rooms(관리자용)', // 현재 페이지 이름
+      referer: req.headers.referer || null, // 이전 페이지 URL 전달 (없을 경우 null)
     }); // chat-rooms.ejs 렌더링
   } catch (error) {
     console.error('Error fetching chat rooms:', error);
@@ -52,6 +53,7 @@ exports.getChatRoom = async (req, res) => {
       user: req.user,
       title: 'chat room', // 페이지 제목
       currentPage: 'chat room', // 현재 페이지 이름
+      referer: req.headers.referer || null, // 이전 페이지 URL 전달 (없을 경우 null)
       token: req.cookies.token, // JWT 토큰 전달
     });
   } catch (error) {

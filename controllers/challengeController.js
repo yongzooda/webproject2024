@@ -38,6 +38,7 @@ exports.getChallenges = async (req, res) => {
       userStats,
       title: 'Challenges',
       currentPage: 'Challenges',
+      referer: req.headers.referer || null, // 이전 페이지 URL 전달 (없을 경우 null)
     });
   } catch (error) {
     console.error('Error fetching challenges data:', error);
@@ -164,6 +165,7 @@ exports.getGroupChallenges = async (req, res) => {
       },
       title: 'Group Challenges',
       currentPage: 'Group Challenges',
+      referer: req.headers.referer || null, // 이전 페이지 URL 전달 (없을 경우 null)
     });
   } catch (error) {
     console.error('Error fetching group challenges data:', error);
