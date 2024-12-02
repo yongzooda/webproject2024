@@ -15,14 +15,14 @@ exports.getLoginPage = (req, res) => {
 
 // 로그인 처리
 exports.handleLogin = async (req, res) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
 
-  console.log('Received username:', username); // username 출력
+  console.log('Received email:', email); // email 출력
   console.log('Received password:', password); // password 출력
 
   try {
     // 사용자 검색
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ email });
 
     if (!user) {
       console.log('사용자를 찾을 수 없습니다.');
@@ -39,7 +39,7 @@ exports.handleLogin = async (req, res) => {
 
     // JWT 생성
     const token = jwt.sign(
-      { _id: user._id, username: user.username, role: user.role }, // JWT 페이로드
+      { _id: user._id, email: user.email, role: user.role }, // JWT 페이로드
       process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );
