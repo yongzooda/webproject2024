@@ -66,7 +66,10 @@ exports.editWorkoutLog = async (req, res) => {
     }
 
     // 관리자 또는 작성자만 수정 가능
-    if (req.user.role !== 'admin' && log.username !== req.user.username) {
+    if (
+      req.user.role !== 'admin' &&
+      log.userId.toString() !== req.user._id.toString()
+    ) {
       return res
         .status(403)
         .send('You do not have permission to edit this log');
@@ -101,7 +104,10 @@ exports.getEditWorkoutLogPage = async (req, res) => {
     }
 
     // 관리자 또는 게시물 작성자만 수정 페이지 접근 가능
-    if (req.user.role !== 'admin' && log.username !== req.user.username) {
+    if (
+      req.user.role !== 'admin' &&
+      log.userId.toString() !== req.user._id.toString()
+    ) {
       return res
         .status(403)
         .send('You do not have permission to edit this log');
@@ -153,7 +159,12 @@ exports.addComment = async (req, res) => {
     const log = await WorkoutLog.findById(id);
     if (!log) return res.status(404).json({ error: 'Workout log not found' });
 
-    const newComment = { username: req.user.username, text, date: new Date() };
+    const newComment = {
+      userId: req.user._id,
+      username: req.user.username,
+      text,
+      date: new Date(),
+    };
     log.comments.push(newComment);
     await log.save();
 
@@ -190,7 +201,7 @@ exports.editComment = async (req, res) => {
       return res.status(404).json({ error: 'Comment not found' });
     }
 
-    if (req.user.role !== 'admin' && comment.username !== req.user.username) {
+    if (req.user.role !== 'admin' && comment.userId !== req.user.userId) {
       console.error('Unauthorized access');
       return res.status(403).json({ error: 'Unauthorized' });
     }

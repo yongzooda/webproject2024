@@ -30,14 +30,15 @@ exports.getDietLogs = async (req, res) => {
 
 // 식단 일지 추가 처리
 exports.addDietLog = async (req, res) => {
-  const { foodName, calories, nutrition, mealTime, description } = req.body;
+  const { title, foodName, calories, nutrition, mealTime, description } =
+    req.body;
   const image = req.file ? req.file.filename : null;
 
   try {
     const newLog = await DietLog.create({
       userId: req.user._id,
       username: req.user.username, // JWT에서 가져온 사용자명
-      title: `${req.user.username}'s Meal`, // 자동 생성된 제목
+      title,
       foodName,
       calories,
       nutrition,
@@ -56,7 +57,8 @@ exports.addDietLog = async (req, res) => {
 // 식단 일지 수정 처리
 exports.editDietLog = async (req, res) => {
   const { id } = req.params;
-  const { foodName, calories, nutrition, mealTime, description } = req.body;
+  const { title, foodName, calories, nutrition, mealTime, description } =
+    req.body;
   const image = req.file ? req.file.filename : null;
 
   try {
@@ -66,13 +68,17 @@ exports.editDietLog = async (req, res) => {
     }
 
     // 관리자 또는 작성자만 수정 가능
-    if (req.user.role !== 'admin' && log.username !== req.user.username) {
+    if (
+      req.user.role !== 'admin' &&
+      log.userId.toString() !== req.user._id.toString()
+    ) {
       return res
         .status(403)
         .send('You do not have permission to edit this log');
     }
 
     // 업데이트
+    log.title = title;
     log.foodName = foodName;
     log.calories = calories;
     log.nutrition = nutrition;
@@ -101,7 +107,10 @@ exports.getEditDietLogPage = async (req, res) => {
     }
 
     // 관리자 또는 게시물 작성자만 수정 페이지 접근 가능
-    if (req.user.role !== 'admin' && log.username !== req.user.username) {
+    if (
+      req.user.role !== 'admin' &&
+      log.userId.toString() !== req.user._id.toString()
+    ) {
       return res
         .status(403)
         .send('You do not have permission to edit this log');
@@ -149,11 +158,21 @@ exports.addComment = async (req, res) => {
   const { id } = req.params;
   const { text } = req.body;
 
+  // req.user가 유효한지 확인
+  if (!req.user || !req.user._id) {
+    return res.status(401).json({ error: 'User not authenticated' });
+  }
+
   try {
     const log = await DietLog.findById(id);
     if (!log) return res.status(404).json({ error: 'Diet log not found' });
 
-    const newComment = { username: req.user.username, text, date: new Date() };
+    const newComment = {
+      userId: req.user._id,
+      username: req.user.username,
+      text,
+      date: new Date(),
+    };
     log.comments.push(newComment);
     await log.save();
 
@@ -180,7 +199,7 @@ exports.editComment = async (req, res) => {
     const comment = log.comments.id(commentId);
     if (!comment) return res.status(404).json({ error: 'Comment not found' });
 
-    if (req.user.role !== 'admin' && comment.username !== req.user.username) {
+    if (req.user.role !== 'admin' && comment.userId !== req.user.userId) {
       return res.status(403).json({ error: 'Unauthorized' });
     }
 
@@ -210,7 +229,7 @@ exports.deleteComment = async (req, res) => {
 
     if (
       req.user.role !== 'admin' &&
-      log.comments[commentIndex].username !== req.user.username
+      log.comments[commentIndex].userId !== req.user.userId
     ) {
       return res.status(403).json({ error: 'Unauthorized' });
     }

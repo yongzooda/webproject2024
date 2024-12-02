@@ -14,6 +14,7 @@ const authenticateJWT = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, jwtSecret); // JWT 검증
+    req.user = decoded; // 사용자 정보 설정
     console.log('Decoded JWT:', decoded);
 
     if (!req) {

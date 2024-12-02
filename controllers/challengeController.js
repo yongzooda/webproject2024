@@ -47,8 +47,11 @@ exports.getChallenges = async (req, res) => {
 
 exports.getGroupChallenges = async (req, res) => {
   try {
-    // 모든 회원 정보 가져오기
-    const users = await WorkoutLog.aggregate([
+    const userId = new mongoose.Types.ObjectId(req.user._id); // 현재 사용자 ID
+    console.log('Current User ID:', userId);
+
+    // WorkoutLog에서 데이터 집계 및 User와 조인
+    const workoutLogs = await WorkoutLog.aggregate([
       {
         $group: {
           _id: '$userId',
@@ -56,8 +59,29 @@ exports.getGroupChallenges = async (req, res) => {
           totalWorkoutLogs: { $sum: 1 }, // 운동일지 개수
         },
       },
+      {
+        $lookup: {
+          from: 'users', // User 컬렉션과 조인
+          localField: '_id',
+          foreignField: '_id',
+          as: 'userInfo',
+        },
+      },
+      {
+        $unwind: '$userInfo', // 배열 형태의 userInfo를 평탄화
+      },
+      {
+        $project: {
+          _id: 0,
+          userId: '$userInfo.username', // username 필드를 가져옴
+          totalWorkoutTime: 1,
+          totalWorkoutLogs: 1,
+        },
+      },
     ]);
+    console.log('Workout Aggregation Result:', workoutLogs);
 
+    // DietLog에서 데이터 집계 및 User와 조인
     const dietLogs = await DietLog.aggregate([
       {
         $group: {
@@ -65,49 +89,78 @@ exports.getGroupChallenges = async (req, res) => {
           totalDietScore: {
             $sum: {
               $add: [
-                { $multiply: ['$nutrition.protein', 10] },
-                { $multiply: ['$nutrition.fat', -5] },
+                { $multiply: ['$nutrition.protein', 10] }, // 단백질 플러스 점수
+                { $multiply: ['$nutrition.fat', -5] }, // 지방 마이너스 점수
+                { $multiply: ['$nutrition.sugar', -10] }, // 당 마이너스 점수
               ],
             },
           },
           totalDietLogs: { $sum: 1 }, // 식단일지 개수
         },
       },
+      {
+        $lookup: {
+          from: 'users', // User 컬렉션과 조인
+          localField: '_id',
+          foreignField: '_id',
+          as: 'userInfo',
+        },
+      },
+      {
+        $unwind: '$userInfo', // 배열 형태의 userInfo를 평탄화
+      },
+      {
+        $project: {
+          _id: 0,
+          userId: '$userInfo.username', // username 필드를 가져옴
+          totalDietScore: 1,
+          totalDietLogs: 1,
+        },
+      },
     ]);
+    console.log('Diet Aggregation Result:', dietLogs);
 
-    // 성실성: 일지 합계 랭킹
-    const combinedLogs = users.map((user) => {
-      const dietLog = dietLogs.find((log) => log._id.equals(user._id)) || {};
+    // 성실성 랭킹 계산 (WorkoutLog + DietLog)
+    const combinedLogs = workoutLogs.map((workout) => {
+      const matchingDietLog = dietLogs.find(
+        (diet) => diet.userId === workout.userId
+      ) || { totalDietLogs: 0 };
       return {
-        username: user.username,
-        totalLogs: (user.totalWorkoutLogs || 0) + (dietLog.totalDietLogs || 0),
+        userId: workout.userId,
+        totalLogs:
+          (workout.totalWorkoutLogs || 0) +
+          (matchingDietLog.totalDietLogs || 0),
       };
     });
 
-    // 운동시간 랭킹
-    const workoutTimeRanking = users.map((user) => ({
-      username: user.username,
-      totalWorkoutTime: user.totalWorkoutTime,
+    // 운동시간 랭킹 계산
+    const workoutRanking = workoutLogs.map((workout) => ({
+      userId: workout.userId,
+      totalWorkoutTime: workout.totalWorkoutTime || 0,
     }));
 
-    // 식단 점수 랭킹
-    const dietScoreRanking = dietLogs.map((log) => ({
-      username: log.username,
-      totalDietScore: log.totalDietScore,
+    // 식단 점수 랭킹 계산
+    const dietRanking = dietLogs.map((diet) => ({
+      userId: diet.userId,
+      totalDietScore: diet.totalDietScore || 0,
     }));
 
-    // 정렬
-    combinedLogs.sort((a, b) => b.totalLogs - a.totalLogs);
-    workoutTimeRanking.sort((a, b) => b.totalWorkoutTime - a.totalWorkoutTime);
-    dietScoreRanking.sort((a, b) => b.totalDietScore - a.totalDietScore);
+    // 데이터 정렬
+    combinedLogs.sort((a, b) => b.totalLogs - a.totalLogs); // 성실성 랭킹
+    workoutRanking.sort((a, b) => b.totalWorkoutTime - a.totalWorkoutTime); // 운동시간 랭킹
+    dietRanking.sort((a, b) => b.totalDietScore - a.totalDietScore); // 식단 점수 랭킹
 
-    // 페이지 렌더링
+    console.log('Combined Logs:', combinedLogs);
+    console.log('Workout Ranking:', workoutRanking);
+    console.log('Diet Ranking:', dietRanking);
+
+    // 그룹 챌린지 페이지 렌더링
     res.render('group-challenges', {
       user: req.user || null,
       rankings: {
         combined: combinedLogs,
-        workoutTime: workoutTimeRanking,
-        dietScore: dietScoreRanking,
+        workoutTime: workoutRanking,
+        dietScore: dietRanking,
       },
       title: 'Group Challenges',
       currentPage: 'Group Challenges',

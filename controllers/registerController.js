@@ -1,12 +1,16 @@
 // controllers/registerController.js
 
-const User = require('../models/User');
+const User = require('../models/user');
 const bcrypt = require('bcrypt');
 require('dotenv').config(); // .env 파일 로드
 
 // 회원가입 페이지 렌더링
 exports.getRegisterPage = (req, res) => {
-  res.render('register');
+  res.render('register', {
+    user: null, // user 변수를 명시적으로 null로 설정,
+    title: 'Register',
+    currentPage: 'Register',
+  });
 };
 
 // 회원가입 처리

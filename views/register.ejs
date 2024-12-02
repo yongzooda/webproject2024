@@ -1,74 +1,157 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Register | FitConnect</title>
-    <link rel="stylesheet" href="/styles.css" />
-    <style>
-      /* 추가 스타일 */
-      #admin-password-field {
-        display: none; /* 기본적으로 숨김 처리 */
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <header>FitConnect Register</header>
-      <form action="/register" method="POST">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required />
+<main>
+  <style>
+    /* 추가 스타일 */
+    #admin-password-field {
+      display: none; /* 기본적으로 숨김 처리 */
+    }
 
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required />
+    main {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: #f9f9f9;
+    }
 
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required />
+    .container {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      margin-top: 240px; /* 상단바와 겹치지 않도록 간격 확보 */
+    }
 
-        <label for="age">Age:</label>
-        <input type="number" id="age" name="age" />
+    .Page-logo.h1 {
+      margin-bottom: 1rem;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #333;
+    }
 
-        <label for="gender">Gender:</label>
-        <select id="gender" name="gender">
-          <option value="Male">Male</option>
-          <option value="Female">Female</option>
-          <option value="Other">Other</option>
-        </select>
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      margin-top: 1rem;
+    }
 
-        <label for="interests">Interests:</label>
-        <input
-          type="text"
-          id="interests"
-          name="interests"
-          placeholder="e.g., fitness, running"
-        />
+    form label {
+      text-align: left;
+      font-weight: bold;
+      font-size: 0.9rem;
+      color: #555;
+    }
 
-        <label for="role">Role:</label>
-        <select
-          id="role"
-          name="role"
-          required
-          onchange="toggleAdminPasswordField(this.value)"
-        >
-          <option value="user">User</option>
-          <option value="admin">Admin</option>
-        </select>
+    form input,
+    form select,
+    form button {
+      padding: 0.8rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      width: 100%;
+    }
 
-        <div id="admin-password-field">
-          <label for="adminPassword">Admin Authentication Password:</label>
-          <input type="password" id="adminPassword" name="adminPassword" />
-        </div>
+    form input:focus,
+    form select:focus {
+      border-color: #333;
+      outline: none;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    }
 
-        <button type="submit">Register</button>
-      </form>
-      <p>Already have an account? <a href="/login">Login here</a></p>
+    form button {
+      background-color: #333;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s ease;
+    }
+
+    form button:hover {
+      background-color: #555;
+    }
+
+    p {
+      margin-top: 1.5rem;
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    p a {
+      color: #333;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    p a:hover {
+      text-decoration: underline;
+    }
+  </style>
+
+  <div class="container">
+    <div class="Page-logo">
+      <h1>FitConnect Register</h1>
     </div>
+    <form action="/register" method="POST">
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required />
 
-    <script>
-      function toggleAdminPasswordField(role) {
-        const adminField = document.getElementById('admin-password-field');
-        adminField.style.display = role === 'admin' ? 'block' : 'none';
-      }
-    </script>
-  </body>
-</html>
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required />
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required />
+
+      <label for="age">Age:</label>
+      <input type="number" id="age" name="age" />
+
+      <label for="gender">Gender:</label>
+      <select id="gender" name="gender">
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="Other">Other</option>
+      </select>
+
+      <label for="interests">Interests:</label>
+      <input
+        type="text"
+        id="interests"
+        name="interests"
+        placeholder="e.g., fitness, running"
+      />
+
+      <label for="role">Role:</label>
+      <select
+        id="role"
+        name="role"
+        required
+        onchange="toggleAdminPasswordField(this.value)"
+      >
+        <option value="user">User</option>
+        <option value="admin">Admin</option>
+      </select>
+
+      <div id="admin-password-field">
+        <label for="adminPassword">Admin Authentication Password:</label>
+        <input type="password" id="adminPassword" name="adminPassword" />
+      </div>
+
+      <button type="submit">Register</button>
+    </form>
+    <p>Already have an account? <a href="/login">Login here</a></p>
+  </div>
+
+  <script>
+    function toggleAdminPasswordField(role) {
+      const adminField = document.getElementById('admin-password-field');
+      adminField.style.display = role === 'admin' ? 'block' : 'none';
+    }
+  </script>
+</main>

@@ -1,97 +1,136 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Add Diet Log</title>
-    <link rel="stylesheet" href="/styles.css" />
-  </head>
-  <body>
-    <header>
-      <h1>Add Diet Log</h1>
-    </header>
-    <main>
-      <form action="/home/diet-log" method="POST" enctype="multipart/form-data">
-        <!-- 작성자 -->
-        <div>
-          <label for="username">Name:</label>
-          <input type="text" id="username" name="username" required />
-        </div>
+<main>
+  <style>
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      margin-top: 37rem; /* 상단바와 간격 확보 */
+      width: 100%;
+      max-width: 800px; /* 중앙 정렬과 적절한 너비 */
+      margin-left: auto;
+      margin-right: auto;
+    }
 
-        <!-- 제목 -->
-        <div>
-          <label for="title">Title:</label>
-          <input type="text" id="title" name="title" required />
-        </div>
+    .Page-logo {
+      width: 100%; /* 로고가 화면 전체 너비 */
+      padding: 1.5rem 0; /* 위아래 여백 */
+      text-align: center; /* 텍스트 중앙 정렬 */
+      background-color: #4caf50; /* 배경색 */
+      color: white; /* 텍스트 색상 */
+      font-size: 2.5rem;
+      font-weight: bold;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 그림자 */
+      margin-bottom: 2rem; /* 로고와 폼 간격 */
+    }
 
-        <!-- 음식명 -->
-        <div>
-          <label for="foodName">Food Name:</label>
-          <input type="text" id="foodName" name="foodName" required />
-        </div>
+    .container {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 컨테이너 그림자 */
+      padding: 2rem;
+      width: 90%;
+      max-width: 400px; /* 폼 너비 제한 */
+      margin: 0 auto; /* 중앙 정렬 */
+    }
 
-        <!-- 칼로리 -->
-        <div>
-          <label for="calories">Calories (kcal):</label>
-          <input type="number" id="calories" name="calories" required />
-        </div>
+    form {
+      display: flex;
+      flex-direction: column; /* 입력 필드가 세로로 정렬되도록 */
+      gap: 1.2rem; /* 필드 간 간격 */
+      margin-top: 1rem;
+    }
 
-        <!-- 영양성분 -->
-        <fieldset>
-          <legend>Nutrition (per serving)</legend>
-          <div>
-            <label for="carbs">Carbohydrates (g):</label>
-            <input type="number" id="carbs" name="nutrition[carbs]" required />
-          </div>
-          <div>
-            <label for="protein">Protein (g):</label>
-            <input
-              type="number"
-              id="protein"
-              name="nutrition[protein]"
-              required
-            />
-          </div>
-          <div>
-            <label for="fat">Fat (g):</label>
-            <input type="number" id="fat" name="nutrition[fat]" required />
-          </div>
-          <div>
-            <label for="sugar">Sugar (g):</label>
-            <input type="number" id="sugar" name="nutrition[sugar]" required />
-          </div>
-          <div>
-            <label for="sodium">Sodium (mg):</label>
-            <input
-              type="number"
-              id="sodium"
-              name="nutrition[sodium]"
-              required
-            />
-          </div>
-        </fieldset>
+    label {
+      display: block;
+      font-size: 1rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      color: #555;
+      text-align: left; /* 레이블 정렬 */
+    }
 
-        <!-- 식사 시간 -->
-        <div>
-          <label for="mealTime">Meal Time:</label>
-          <input type="datetime-local" id="mealTime" name="mealTime" required />
-        </div>
+    input[type='text'],
+    input[type='number'],
+    input[type='datetime-local'],
+    input[type='file'],
+    textarea {
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-bottom: 1rem;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease;
+    }
 
-        <!-- 설명 -->
-        <div>
-          <label for="description">Description:</label>
-          <textarea id="description" name="description" rows="5"></textarea>
-        </div>
+    input:focus,
+    textarea:focus {
+      border-color: #4caf50; /* 포커스 시 테두리 색상 */
+      outline: none;
+    }
 
-        <!-- 이미지 -->
-        <div>
-          <label for="image">Image:</label>
-          <input type="file" id="image" name="image" />
-        </div>
+    .submit-btn {
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: white;
+      background-color: #4caf50;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
 
-        <!-- 제출 버튼 -->
-        <button type="submit">Add Diet Log</button>
-      </form>
-    </main>
-  </body>
-</html>
+    .submit-btn:hover {
+      background-color: #45a049; /* 버튼 호버 색상 */
+    }
+  </style>
+
+  <!-- 페이지 로고 -->
+  <div class="Page-logo">Add Diet Log</div>
+
+  <!-- 폼 컨테이너 -->
+  <div class="container">
+    <form action="/home/diet-log" method="POST" enctype="multipart/form-data">
+      <label for="username">Name:</label>
+      <input type="text" id="username" name="username" required />
+
+      <label for="title">Title:</label>
+      <input type="text" id="title" name="title" required />
+
+      <label for="foodName">Food Name:</label>
+      <input type="text" id="foodName" name="foodName" required />
+
+      <label for="calories">Calories (kcal):</label>
+      <input type="number" id="calories" name="calories" required />
+
+      <fieldset class="form-fieldset">
+        <legend>Nutrition (per serving)</legend>
+        <label for="carbs">Carbohydrates (g):</label>
+        <input type="number" id="carbs" name="nutrition[carbs]" required />
+        <label for="protein">Protein (g):</label>
+        <input type="number" id="protein" name="nutrition[protein]" required />
+        <label for="fat">Fat (g):</label>
+        <input type="number" id="fat" name="nutrition[fat]" required />
+        <label for="sugar">Sugar (g):</label>
+        <input type="number" id="sugar" name="nutrition[sugar]" required />
+        <label for="sodium">Sodium (mg):</label>
+        <input type="number" id="sodium" name="nutrition[sodium]" required />
+      </fieldset>
+
+      <label for="mealTime">Meal Time:</label>
+      <input type="datetime-local" id="mealTime" name="mealTime" required />
+
+      <label for="description">Description:</label>
+      <textarea id="description" name="description" rows="5"></textarea>
+
+      <label for="image">Image:</label>
+      <input type="file" id="image" name="image" />
+
+      <button type="submit" class="submit-btn">Add Diet Log</button>
+    </form>
+  </div>
+</main>
