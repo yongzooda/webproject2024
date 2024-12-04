@@ -155,33 +155,50 @@ defer></script>
         return R * c; // 거리(km)
       }
 
-      function displayGyms(gyms) {
-        const gymList = document.getElementById('gym-list');
-        gymList.innerHTML = gyms
-          .map((gym) => {
-            const name = gym.name || 'No name available';
-            const vicinity = gym.vicinity || 'No location available';
-            const rating = gym.rating
-              ? `<p>Rating: ${gym.rating} ⭐</p>`
-              : '<p>No rating available</p>';
-            const distance = gym.distance
-              ? `<p>Distance: ${gym.distance.toFixed(2)} km</p>`
-              : '';
+      let markers = []; // 마커와 관련된 데이터를 저장할 배열
 
-            return `
-              <div class="gym-card">
-                <h2>${name}</h2>
-                <p>${vicinity}</p>
-                ${rating}
-                ${distance}
-              </div>
-            `;
-          })
-          .join('');
+function displayGyms(gyms) {
+  const gymList = document.getElementById('gym-list');
+  gymList.innerHTML = gyms
+    .map((gym, index) => {
+      const name = gym.name || 'No name available';
+      const vicinity = gym.vicinity || 'No location available';
+      const rating = gym.rating
+        ? `<p>Rating: ${gym.rating} ⭐</p>`
+        : '<p>No rating available</p>';
+      const distance = gym.distance
+        ? `<p>Distance: ${gym.distance.toFixed(2)} km</p>`
+        : '';
+
+      // 카드 HTML 생성
+      return `
+        <div class="gym-card" data-index="${index}">
+          <h2>${name}</h2>
+          <p>${vicinity}</p>
+          ${rating}
+          ${distance}
+        </div>
+      `;
+    })
+    .join('');
+
+  // 각 카드에 클릭 이벤트 추가
+  document.querySelectorAll('.gym-card').forEach((card) => {
+    card.addEventListener('click', (event) => {
+      const index = event.currentTarget.getAttribute('data-index');
+      if (markers[index]) {
+        const { marker, infoWindow } = markers[index];
+        map.setCenter(marker.getPosition()); // 해당 마커 위치로 이동
+        map.setZoom(16); // 지도 확대
+        infoWindow.open(map, marker); // 상세 정보 창 열기
       }
+    });
+  });
+}
 
-      function addMarkersToMap(gyms) {
-  gyms.forEach((gym) => {
+
+function addMarkersToMap(gyms) {
+  gyms.forEach((gym, index) => {
     if (!gym.geometry || !gym.geometry.location) return;
 
     const marker = new google.maps.Marker({
@@ -223,11 +240,16 @@ defer></script>
       `,
     });
 
+    // 마커 클릭 이벤트 추가
     marker.addListener('click', () => {
       infoWindow.open(map, marker);
     });
+
+    // 마커와 infoWindow를 배열에 저장
+    markers[index] = { marker, infoWindow };
   });
 }
+
 
     </script>
   </body>
