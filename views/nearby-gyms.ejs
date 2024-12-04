@@ -212,7 +212,7 @@ function addMarkersToMap(gyms) {
 
     const infoWindow = new google.maps.InfoWindow({
       content: `
-        <div style="max-width: 250px; font-family: Arial, sans-serif; line-height: 1.5;">
+        <div id="infoWindowContent-${index}" style="font-family: Arial, sans-serif; line-height: 1.5;">
           <h2 style="font-size: 1rem; margin: 0 0 0.5rem; color: #007bff;">${
             gym.name || '이름 없음'
           }</h2>
@@ -245,10 +245,22 @@ function addMarkersToMap(gyms) {
       infoWindow.open(map, marker);
     });
 
+    // 지도 줌 변경 이벤트에 따른 InfoWindow 크기 업데이트
+    google.maps.event.addListener(map, 'zoom_changed', () => {
+      const zoomLevel = map.getZoom(); // 현재 줌 레벨 가져오기
+      const scaleFactor = Math.max(0.5, zoomLevel / 14); // 기본 줌 레벨 14 기준 스케일
+      const contentElement = document.getElementById(`infoWindowContent-${index}`);
+      if (contentElement) {
+        contentElement.style.transform = `scale(${scaleFactor})`; // 크기 조정
+        contentElement.style.transformOrigin = 'top left'; // 변환 중심 설정
+      }
+    });
+
     // 마커와 infoWindow를 배열에 저장
     markers[index] = { marker, infoWindow };
   });
 }
+
 
 
     </script>
