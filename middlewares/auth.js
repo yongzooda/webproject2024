@@ -12,13 +12,11 @@ const authenticateJWT = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, jwtSecret); // JWT 검증
     req.user = decoded; // 사용자 정보 설정
-    console.log('Decoded JWT:', decoded);
 
     if (!req) {
       console.error('Error: req is undefined');
     } else {
       req.user = decoded; // 디코딩된 사용자 정보 설정
-      console.log('req.user set in authenticateJWT:', req.user); // 확인 로그 추가
     }
 
     next();

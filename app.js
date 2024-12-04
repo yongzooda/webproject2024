@@ -29,15 +29,11 @@ app.use(cookieParser());
 
 // JWT 기반 글로벌 미들웨어
 app.use((req, res, next) => {
-  console.log('--- Global middleware executed ---');
-  console.log('Cookies in request:', req.cookies);
-
   const token = req.cookies.token; // 쿠키에서 JWT 가져오기
   if (token) {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET); // JWT 검증
       req.user = decoded; // 사용자 정보 설정
-      console.log('Decoded user from token:', req.user);
     } catch (error) {
       console.error('Invalid or expired JWT:', error.message);
       req.user = null; // 인증 실패 시 req.user를 null로 설정
