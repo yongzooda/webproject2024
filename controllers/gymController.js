@@ -35,7 +35,21 @@ exports.getNearbyGyms = async (req, res) => {
       return res.status(500).json({ error: 'Error fetching gyms data' });
     }
 
-    res.json(data.results);
+    // 헬스장 사진 URL 추가
+    const gymsWithPhotos = data.results.map((gym) => {
+      const photoReference =
+        gym.photos && gym.photos[0] && gym.photos[0].photo_reference;
+      const photoUrl = photoReference
+        ? `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoReference}&key=${apiKey}`
+        : null;
+
+      return {
+        ...gym,
+        photoUrl, // 사진 URL 추가
+      };
+    });
+
+    res.json(gymsWithPhotos);
   } catch (error) {
     console.error('Error fetching gyms:', error);
     res.status(500).send('Error fetching gyms');

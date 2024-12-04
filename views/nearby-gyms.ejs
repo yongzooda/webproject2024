@@ -181,48 +181,54 @@ defer></script>
       }
 
       function addMarkersToMap(gyms) {
-        gyms.forEach((gym) => {
-          if (!gym.geometry || !gym.geometry.location) return;
+  gyms.forEach((gym) => {
+    if (!gym.geometry || !gym.geometry.location) return;
 
-          const marker = new google.maps.Marker({
-            position: {
-              lat: gym.geometry.location.lat,
-              lng: gym.geometry.location.lng,
-            },
-            map: map,
-            title: gym.name || 'No name available',
-          });
+    const marker = new google.maps.Marker({
+      position: {
+        lat: gym.geometry.location.lat,
+        lng: gym.geometry.location.lng,
+      },
+      map: map,
+      title: gym.name || '이름 없음',
+    });
 
-          const infoWindow = new google.maps.InfoWindow({
-            content: `
-              <div style="max-width: 250px; font-family: Arial, sans-serif; line-height: 1.5;">
-                <h2 style="font-size: 1rem; margin: 0 0 0.5rem; color: #007bff;">${
-                  gym.name || 'No name available'
-                }</h2>
-                <p style="margin: 0 0 0.5rem; color: #555;">${
-                  gym.vicinity || 'No location available'
-                }</p>
-                ${
-                  gym.rating
-                    ? `<p style="margin: 0; color: #444;">Rating: <strong>${gym.rating} ⭐</strong></p>`
-                    : '<p style="margin: 0; color: #999;">No rating available</p>'
-                }
-                ${
-                  gym.distance
-                    ? `<p style="margin: 0; color: #666;">Distance: ${gym.distance.toFixed(
-                        2
-                      )} km</p>`
-                    : ''
-                }
-              </div>
-            `,
-          });
+    const infoWindow = new google.maps.InfoWindow({
+      content: `
+        <div style="max-width: 250px; font-family: Arial, sans-serif; line-height: 1.5;">
+          <h2 style="font-size: 1rem; margin: 0 0 0.5rem; color: #007bff;">${
+            gym.name || '이름 없음'
+          }</h2>
+          <p style="margin: 0 0 0.5rem; color: #555;">${
+            gym.vicinity || '주소 없음'
+          }</p>
+          ${
+            gym.rating
+              ? `<p style="margin: 0; color: #444;">평점: <strong>${gym.rating} ⭐</strong></p>`
+              : '<p style="margin: 0; color: #999;">평점 없음</p>'
+          }
+          ${
+            gym.photoUrl
+              ? `<img src="${gym.photoUrl}" alt="헬스장 사진" style="width: 100%; margin-top: 10px; border-radius: 8px;" />`
+              : '<p style="margin: 0; color: #999;">사진 없음</p>'
+          }
+          ${
+            gym.distance
+              ? `<p style="margin: 0; color: #666;">거리: ${gym.distance.toFixed(
+                  2
+                )} km</p>`
+              : ''
+          }
+        </div>
+      `,
+    });
 
-          marker.addListener('click', () => {
-            infoWindow.open(map, marker);
-          });
-        });
-      }
+    marker.addListener('click', () => {
+      infoWindow.open(map, marker);
+    });
+  });
+}
+
     </script>
   </body>
 </html>
