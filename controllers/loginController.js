@@ -40,7 +40,12 @@ exports.handleLogin = async (req, res) => {
 
     // JWT 생성
     const token = jwt.sign(
-      { _id: user._id, email: user.email, role: user.role }, // JWT 페이로드
+      {
+        _id: user._id,
+        email: user.email,
+        username: user.username,
+        role: user.role,
+      }, // JWT 페이로드
       process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );

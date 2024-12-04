@@ -2,13 +2,10 @@ const jwt = require('jsonwebtoken');
 const jwtSecret = process.env.JWT_SECRET; // JWT 서명용 비밀 키
 
 const authenticateJWT = (req, res, next) => {
-  console.log('--- authenticateJWT called ---');
-  console.log('Cookies in request:', req.cookies); // 전체 쿠키 출력
   const token = req.cookies.token; // 쿠키에서 JWT 가져오기
-  console.log('JWT Token from cookies:', token);
 
   if (!token) {
-    console.error('No token found in cookies');
+    req.user = null; // 로그인되지 않음
     return res.status(401).send('Access denied. No token provided.');
   }
 

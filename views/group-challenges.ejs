@@ -55,6 +55,26 @@
   }
 </style>
 
+<div class="month-selector">
+  <label for="monthSelect">Choose Month:</label>
+  <select id="monthSelect">
+    <% for (let i = 0; i < 12; i++) { %>
+      <% const date = new Date(); date.setMonth(date.getMonth() - i); %>
+      <% const month = date.toISOString().slice(0, 7); %>
+      <option value="<%= month %>" <%= month === selectedMonth ? 'selected' : '' %>>
+        <%= month %>
+      </option>
+    <% } %>
+  </select>
+</div>
+
+<script>
+  document.getElementById('monthSelect').addEventListener('change', (e) => {
+    const selectedMonth = e.target.value;
+    window.location.href = `/home/challenges/group-challenges?month=${selectedMonth}`;
+  });
+</script>
+
 <div class="leaderboard-container">
   <!-- 성실성 랭킹 -->
   <div class="leaderboard-section">

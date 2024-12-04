@@ -1,0 +1,26 @@
+<form action="/home/challenges/set-goals" method="POST">
+  <h3>운동 목표 설정</h3>
+  <label for="month">월 선택:</label>
+  <input type="month" id="month" name="month" required />
+
+  <label for="workoutGoal">운동 목표 (횟수):</label>
+  <input type="number" id="workoutGoal" name="workoutGoal" required />
+
+  <label for="workoutTimeGoal">운동 목표 시간 (분):</label>
+  <input type="number" id="workoutTimeGoal" name="workoutTimeGoal" required />
+
+  <h3>식단 목표 설정</h3>
+  <label for="proteinGoal">단백질 (g):</label>
+  <input type="number" id="proteinGoal" name="proteinGoal" required />
+
+  <label for="carbGoal">탄수화물 (g):</label>
+  <input type="number" id="carbGoal" name="carbGoal" required />
+
+  <label for="fatGoal">지방 (g):</label>
+  <input type="number" id="fatGoal" name="fatGoal" required />
+
+  <label for="sugarGoal">당 (g):</label>
+  <input type="number" id="sugarGoal" name="sugarGoal" required />
+
+  <button type="submit">목표 저장</button>
+</form>
