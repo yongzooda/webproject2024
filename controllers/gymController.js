@@ -17,8 +17,8 @@ exports.getNearbyGyms = async (req, res) => {
   }
 
   const apiKey = 'AIzaSyCR_YT9dN3ei0ZBsiui-9UX8Vj6POVYEHQ';
-  const radius = 5000; // 검색 반경을 확장
-  const type = 'establishment'; // 다양한 유형 포함
+  const radius = 5000;
+  const type = 'establishment';
   const keyword =
     'gym OR fitness OR health club OR yoga OR pilates OR personal training OR bodybuilding OR crossfit OR strength training';
 
@@ -35,21 +35,31 @@ exports.getNearbyGyms = async (req, res) => {
       return res.status(500).json({ error: 'Error fetching gyms data' });
     }
 
-    // 헬스장 사진 URL 추가
-    const gymsWithPhotos = data.results.map((gym) => {
-      const photoReference =
-        gym.photos && gym.photos[0] && gym.photos[0].photo_reference;
-      const photoUrl = photoReference
-        ? `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoReference}&key=${apiKey}`
-        : null;
+    // 상세 정보를 가져오기 위해 place_id를 사용
+    const gymsWithDetails = await Promise.all(
+      data.results.map(async (gym) => {
+        const photoReference =
+          gym.photos && gym.photos[0] && gym.photos[0].photo_reference;
+        const photoUrl = photoReference
+          ? `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoReference}&key=${apiKey}`
+          : null;
 
-      return {
-        ...gym,
-        photoUrl, // 사진 URL 추가
-      };
-    });
+        const detailsUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${gym.place_id}&fields=name,formatted_phone_number&key=${apiKey}`;
+        const detailsResponse = await fetch(detailsUrl);
+        const detailsData = await detailsResponse.json();
 
-    res.json(gymsWithPhotos);
+        return {
+          ...gym,
+          photoUrl,
+          phoneNumber:
+            detailsData.result && detailsData.result.formatted_phone_number
+              ? detailsData.result.formatted_phone_number
+              : 'No phone number available',
+        };
+      })
+    );
+
+    res.json(gymsWithDetails);
   } catch (error) {
     console.error('Error fetching gyms:', error);
     res.status(500).send('Error fetching gyms');

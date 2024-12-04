@@ -157,7 +157,7 @@ defer></script>
 
       let markers = []; // 마커와 관련된 데이터를 저장할 배열
 
-function displayGyms(gyms) {
+      function displayGyms(gyms) {
   const gymList = document.getElementById('gym-list');
   gymList.innerHTML = gyms
     .map((gym, index) => {
@@ -169,14 +169,17 @@ function displayGyms(gyms) {
       const distance = gym.distance
         ? `<p>Distance: ${gym.distance.toFixed(2)} km</p>`
         : '';
+      const phoneNumber = gym.phoneNumber
+        ? `<p>Phone: ${gym.phoneNumber}</p>`
+        : '<p>No phone number available</p>';
 
-      // 카드 HTML 생성
       return `
         <div class="gym-card" data-index="${index}">
           <h2>${name}</h2>
           <p>${vicinity}</p>
           ${rating}
           ${distance}
+          ${phoneNumber}
         </div>
       `;
     })
@@ -196,7 +199,6 @@ function displayGyms(gyms) {
   });
 }
 
-
 function addMarkersToMap(gyms) {
   gyms.forEach((gym, index) => {
     if (!gym.geometry || !gym.geometry.location) return;
@@ -207,31 +209,36 @@ function addMarkersToMap(gyms) {
         lng: gym.geometry.location.lng,
       },
       map: map,
-      title: gym.name || '이름 없음',
+      title: gym.name || 'No name available',
     });
 
     const infoWindow = new google.maps.InfoWindow({
       content: `
-        <div id="infoWindowContent-${index}" style="font-family: Arial, sans-serif; line-height: 1.5;">
+        <div style="max-width: 250px; font-family: Arial, sans-serif; line-height: 1.5;">
           <h2 style="font-size: 1rem; margin: 0 0 0.5rem; color: #007bff;">${
-            gym.name || '이름 없음'
+            gym.name || 'No name available'
           }</h2>
           <p style="margin: 0 0 0.5rem; color: #555;">${
-            gym.vicinity || '주소 없음'
+            gym.vicinity || 'No location available'
           }</p>
           ${
             gym.rating
-              ? `<p style="margin: 0; color: #444;">평점: <strong>${gym.rating} ⭐</strong></p>`
-              : '<p style="margin: 0; color: #999;">평점 없음</p>'
+              ? `<p style="margin: 0; color: #444;">Rating: <strong>${gym.rating} ⭐</strong></p>`
+              : '<p style="margin: 0; color: #999;">No rating available</p>'
+          }
+          ${
+            gym.phoneNumber
+              ? `<p style="margin: 0; color: #666;">Phone: ${gym.phoneNumber}</p>`
+              : '<p style="margin: 0; color: #999;">No phone number available</p>'
           }
           ${
             gym.photoUrl
-              ? `<img src="${gym.photoUrl}" alt="헬스장 사진" style="width: 100%; margin-top: 10px; border-radius: 8px;" />`
-              : '<p style="margin: 0; color: #999;">사진 없음</p>'
+              ? `<img src="${gym.photoUrl}" alt="Gym Photo" style="width: 100%; margin-top: 10px; border-radius: 8px;" />`
+              : '<p style="margin: 0; color: #999;">No photo available</p>'
           }
           ${
             gym.distance
-              ? `<p style="margin: 0; color: #666;">거리: ${gym.distance.toFixed(
+              ? `<p style="margin: 0; color: #666;">Distance: ${gym.distance.toFixed(
                   2
                 )} km</p>`
               : ''
@@ -240,26 +247,14 @@ function addMarkersToMap(gyms) {
       `,
     });
 
-    // 마커 클릭 이벤트 추가
     marker.addListener('click', () => {
       infoWindow.open(map, marker);
     });
 
-    // 지도 줌 변경 이벤트에 따른 InfoWindow 크기 업데이트
-    google.maps.event.addListener(map, 'zoom_changed', () => {
-      const zoomLevel = map.getZoom(); // 현재 줌 레벨 가져오기
-      const scaleFactor = Math.max(0.5, zoomLevel / 14); // 기본 줌 레벨 14 기준 스케일
-      const contentElement = document.getElementById(`infoWindowContent-${index}`);
-      if (contentElement) {
-        contentElement.style.transform = `scale(${scaleFactor})`; // 크기 조정
-        contentElement.style.transformOrigin = 'top left'; // 변환 중심 설정
-      }
-    });
-
-    // 마커와 infoWindow를 배열에 저장
     markers[index] = { marker, infoWindow };
   });
 }
+
 
 
 
