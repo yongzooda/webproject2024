@@ -90,6 +90,7 @@ exports.editWorkoutLog = async (req, res) => {
     await log.save();
 
     // redirectTo 값을 사용하여 리다이렉트
+
     if (redirectTo && redirectTo.includes('/home/mypage')) {
       return res.redirect('/home/mypage');
     }

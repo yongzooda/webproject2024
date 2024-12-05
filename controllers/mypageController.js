@@ -8,6 +8,7 @@ exports.renderMyPage = async (req, res) => {
     const userId = req.user._id; // 현재 로그인된 사용자 ID 가져오기
 
     // 사용자가 작성한 운동일지, 식단일지, 댓글 가져오기
+
     const workoutLogs = await WorkoutLog.find({ userId }).populate('comments');
     const dietLogs = await DietLog.find({ userId }).populate('comments');
     const userInfo = await User.findById(userId);
