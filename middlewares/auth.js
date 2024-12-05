@@ -6,7 +6,7 @@ const authenticateJWT = (req, res, next) => {
 
   if (!token) {
     req.user = null; // 로그인되지 않음
-    return res.status(401).send('Access denied. No token provided.');
+    return res.status(401).send('로그인을 먼저 해주세요!');
   }
 
   try {

@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><%= title %> | FitConnect</title>
     <link rel="stylesheet" href="/styles.css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      rel="stylesheet"
+    />
     <style>
       body {
         margin: 0;
@@ -13,12 +17,11 @@
         flex-direction: column;
         min-height: 100vh;
       }
-
+    
       header {
-        background: #333 !important; /* 상단바 배경색 강제 적용 */
-        color: white !important; /* 상단바 텍스트 색 강제 적용 */
-        font-size: 1.5rem !important; /* 상단바 폰트 크기 고정 */
-        padding: 1rem 3rem; /* Increased padding for more space */
+        background: linear-gradient(90deg, #007bff, #6610f2);
+        color: white;
+        padding: 0.5rem 2rem;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -26,86 +29,111 @@
         top: 0;
         z-index: 1000;
         width: 100%;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        height: 80px; /* 상단바 높이 고정 */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       }
 
       header .logo {
-        flex: 1; /* Take up remaining space */
-        display: flex;
-        align-items: center; /* Align items vertically */
+        margin-left: 1rem; /* 왼쪽 여백 추가 */
       }
-
-      header .logo h1 {
-        margin: 0;
-        font-size: 2rem; /* Increased font size */
-        font-weight: 600;
-        padding-left: 1rem; /* Added padding for spacing */
-      }
-
+    
       header .logo a {
-        text-decoration: none;
+        font-size: 1.8rem;
+        font-weight: bold;
         color: white;
-        transition: color 0.3s ease;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease; /* 추가된 부분 */
       }
-
+    
+      header .logo a i {
+        font-size: 2rem;
+      }
+    
+      /* FitConnect 로고 호버 효과 */
       header .logo a:hover {
-        color: #007bff; /* 링크 호버 색상 */
+        color: #f1c40f;
+        transform: scale(1.1); /* 확대 효과 */
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4); /* 그림자 효과 */
       }
-
+    
       header .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+      }
+    
+      header .nav-links a {
+        color: white;
+        font-weight: 500;
+        text-decoration: none;
+        padding: 0.5rem 1rem;
+        border-radius: 3px;
+        transition: background-color 0.3s, transform 0.3s;
+      }
+    
+      header .nav-links a:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+      }
+    
+      header .user-info {
+        font-size: 0.9rem;
         display: flex;
         align-items: center;
         gap: 1rem;
       }
-
-      header .user-info {
-        font-size: 0.9rem;
+    
+      header .user-info span {
+        font-size: 1rem;
       }
-
-      header a {
-        color: white;
-        text-decoration: none;
-        font-weight: bold;
-        padding: 0.5rem 1rem;
-        border-radius: 5px;
-        transition: background-color 0.3s ease;
-      }
-
-      header a:hover {
-        background-color: rgba(255, 255, 255, 0.2);
-      }
-
+    
+      /* 이전 페이지 버튼 색상 조정 */
       .back-button {
-        background-color: #f44336;
+        background-color: #6610f2; /* FitConnect 색상과 어울리게 설정 */
         color: white;
-        text-decoration: none;
         font-weight: bold;
         padding: 0.5rem 1rem;
-        border-radius: 5px;
-        transition: background-color 0.3s ease;
+        border-radius: 3px;
+        transition: all 0.3s ease; /* 추가된 부분 */
       }
-
+    
+      /* 이전 페이지 버튼 호버 효과 */
       .back-button:hover {
-        background-color: #d32f2f;
+        background-color: #d63384; /* 밝은 색으로 전환 */
+        transform: translateY(-3px); /* 살짝 위로 올라가는 효과 */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
       }
-
+    
       main {
         flex: 1;
         display: flex;
         justify-content: center;
         align-items: center;
         padding: 2rem;
-        padding-top: 80px; /* 상단바와의 간격 조정 */
       }
+    
+      @media (max-width: 768px) {
+        header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+    
+        header .nav-links {
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 0.5rem;
+        }
+      }
+    </style>
+    
     </style>
   </head>
   <body>
     <header>
       <div class="logo">
-        <a href="/home">
-          <h1>FitConnect</h1>
-        </a>
+        <a href="/home"> <i class="fas fa-dumbbell"></i> FitConnect </a>
       </div>
       <div class="nav-links">
         <span>현재 페이지: <%= currentPage %></span>
@@ -113,8 +141,8 @@
         <a href="<%= referer %>" class="back-button">이전 페이지로 이동</a>
         <% } %>
         <span class="user-info">
-          <% if (user && user.username) { %> <%= user.username %>님, 환영합니다!
-          <% } else { %> 방문자님, 로그인해주세요. <% } %>
+          <% if (user && user.username) { %> <%= user.username %>님 환영합니다! <% } else {
+          %> 방문자님 로그인 해주세요 <% } %>
         </span>
         <a href="<%= user ? '/logout' : '/login' %>">
           <%= user ? 'Logout' : 'Login' %>

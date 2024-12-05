@@ -1,89 +1,112 @@
 <style>
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(to bottom, #2c3e50, #4ca1af);
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
   main {
     display: flex;
     flex-direction: column;
     align-items: center;
     margin-top: 2rem;
     width: 100%;
+    padding: 1rem;
+    box-sizing: border-box;
   }
 
   h1 {
-    font-size: 2rem;
+    font-size: 2.5rem;
     margin-bottom: 2rem;
     text-align: center;
+    color: #ffffff;
   }
 
   .chat-room-container {
     display: flex;
     flex-direction: column;
-    width: 100%; /* 부모 컨테이너가 페이지 전체를 차지 */
-    gap: 1rem; /* 각 채팅방 간격 */
-    padding: 0 2rem; /* 좌우 여백 */
+    width: 100%;
+    max-width: 800px;
+    gap: 1rem;
   }
 
   .chat-room-item {
-    background: white;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 1rem;
-    text-align: left;
-    transition: transform 0.2s;
-    width: 100%; /* 부모 컨테이너의 너비를 가득 채움 */
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    padding: 1.5rem;
+    transition: transform 0.2s, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
 
   .chat-room-item:hover {
-    transform: scale(1.02);
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
   }
 
   .chat-room-item strong {
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     color: #333;
+    margin-bottom: 0.5rem;
   }
 
   .chat-room-item p {
-    margin: 0.5rem 0;
+    margin: 0.5rem 0 1rem;
     font-size: 1rem;
-    color: #666;
+    color: #555;
   }
 
-  .chat-room-item a {
+  .chat-room-item .join-button {
+    background: #007bff;
+    color: white;
     text-decoration: none;
-    color: #007bff;
+    padding: 0.8rem 1.2rem;
+    border-radius: 5px;
     font-weight: bold;
-    font-size: 1rem;
+    text-align: center;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    align-self: flex-start;
+    display: inline-block;
   }
 
-  .chat-room-item a:hover {
-    text-decoration: underline;
+  .chat-room-item .join-button:hover {
+    background: #0056b3;
+    transform: scale(1.05);
   }
 
   .no-rooms {
     font-size: 1.5rem;
-    color: #555;
+    color: #dddddd;
     text-align: center;
+    margin-top: 2rem;
   }
 </style>
-  </head>
-  <body>
-    <main>
-      <h1>Chat Rooms</h1>
-      <% if (chatRooms.length === 0) { %>
-      <p class="no-rooms">현재 진행 중인 채팅이 없습니다.</p>
-      <% } else { %>
-      <ul class="chat-room-list">
-        <% chatRooms.forEach((room) => { %>
-        <li class="chat-room-item">
-          <strong>채팅방 ID: <%= room.roomId %></strong>
-          <p>
-            참여자: <%= room.participants.filter(p => p !== 'admin').join(', ')
-            %>
-          </p>
-          <a href="/live-chat/room/<%= room.roomId %>">채팅방 참여하기</a>
-        </li>
-        <% }); %>
-      </ul>
-      <% } %>
-    </main>
-  </body>
-</html>
+<body>
+  <main>
+    <h1>Chat Rooms</h1>
+    <% if (chatRooms.length === 0) { %>
+    <p class="no-rooms">현재 진행 중인 채팅이 없습니다.</p>
+    <% } else { %>
+    <div class="chat-room-container">
+      <% chatRooms.forEach((room) => { %>
+      <div class="chat-room-item">
+        <strong>채팅방 ID: <%= room.roomId %></strong>
+        <p>
+          참여자: <%= room.participants.filter(p => p !== 'admin').join(', ') %>
+        </p>
+        <a href="/live-chat/room/<%= room.roomId %>" class="join-button"
+          >채팅방 참여하기</a
+        >
+      </div>
+      <% }); %>
+    </div>
+    <% } %>
+  </main>
+</body>

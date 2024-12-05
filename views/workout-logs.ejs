@@ -1,7 +1,14 @@
 <style>
+  /* 전체 스타일 */
+  body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f7fc;
+    color: #333;
+  }
+
   /* 상단바와 메인 컨텐츠 간 간격 확보 */
   .main {
-    margin-top: 6rem;
+    margin-top: 7rem;
     padding: 1rem;
     display: flex;
     flex-direction: column;
@@ -19,28 +26,29 @@
   }
 
   .header-controls h1 {
-    font-size: 2rem;
+    font-size: 2.5rem;
     text-align: left;
     margin: 0;
+    color: #2a5298;
+    font-weight: bold;
   }
 
   .header-controls a.add-log-btn {
     display: inline-block;
     padding: 0.8rem 1.5rem;
-    background-color: #4caf50;
+    background-color: #1976d2;
     color: white;
     text-decoration: none;
-    font-size: 1rem;
-    border-radius: 5px;
+    font-size: 1.1rem;
+    border-radius: 8px;
     font-weight: bold;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease, transform 0.2s ease;
   }
 
   .header-controls a.add-log-btn:hover {
-    background-color: #45a049;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background-color: #005cbf;
+    transform: scale(1.05);
   }
 
   .container {
@@ -48,10 +56,10 @@
     max-width: 1200px;
     margin: 0 auto;
     text-align: left;
-    background: #f9f9f9;
+    background: #ffffff;
     padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
     overflow-y: auto;
     height: calc(100vh - 8rem);
   }
@@ -64,33 +72,26 @@
   ul li {
     margin: 1.5em 0;
     padding: 1.5em;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    background: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    background: #fdfdfd;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s, box-shadow 0.3s;
   }
 
   ul li:hover {
-    transform: scale(1.02);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  }
-
-  .log-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
   }
 
   .log-header strong {
-    font-size: 1.5rem;
-    color: #333;
+    font-size: 1.8rem;
+    color: #1976d2;
   }
 
   .posted-on {
-    font-size: 0.9rem;
-    color: #777;
+    font-size: 0.95rem;
+    color: #555;
     text-align: right;
   }
 
@@ -110,7 +111,7 @@
   img {
     display: block;
     margin: 1rem auto;
-    border-radius: 5px;
+    border-radius: 8px;
     width: 80%;
     max-width: 500px;
     height: auto;
@@ -120,16 +121,23 @@
   .comments-section {
     margin-top: 1rem;
     padding: 1rem;
-    background-color: #f1f1f1;
+    background-color: #eaf3ff;
     border-radius: 8px;
+  }
+
+  .comments-section h3 {
+    font-size: 1.5rem;
+    color: #1976d2;
+    margin-bottom: 1rem;
   }
 
   .comment {
     position: relative;
-    padding: 0.5rem;
-    margin-bottom: 0.5rem;
+    padding: 0.8rem;
+    margin-bottom: 0.8rem;
     border-bottom: 1px solid #ddd;
     transition: opacity 0.3s ease, transform 0.3s ease;
+    color: #444;
   }
 
   .comment.removing {
@@ -138,13 +146,8 @@
   }
 
   .comment strong {
-    color: #007bff;
-    font-size: 0.9rem;
-  }
-
-  .comment p {
-    margin: 0.2rem 0;
-    font-size: 0.9rem;
+    color: #1976d2;
+    font-size: 1rem;
   }
 
   .comment-form {
@@ -155,26 +158,27 @@
 
   .comment-form input {
     flex: 1;
-    padding: 0.5rem;
+    padding: 0.8rem;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 6px;
     font-size: 1rem;
   }
 
   .comment-form button {
-    padding: 0.5rem 1rem;
+    padding: 0.6rem 1.2rem;
     font-size: 1rem;
-    background-color: #007bff;
+    background-color: #1976d2;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
   }
 
   .comment-form button:hover {
-    background-color: #0056b3;
+    background-color: #005cbf;
   }
 </style>
+>
 
 <main class="main">
   <div class="header-controls">

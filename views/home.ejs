@@ -2,34 +2,37 @@
   <style>
     /* 전체 화면 설정 */
     body {
-      margin: 0; /* body의 여백 제거 */
-      font-family: Arial, sans-serif;
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
       background: linear-gradient(to bottom, #2c3e50, #4ca1af);
       color: #fff;
-      min-height: 100vh; /* 화면 전체 크기 채우기 */
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
+      align-items: center;
     }
 
-    /* 메인 레이아웃 */
+    /* 메인 섹션 */
     main {
       display: flex;
       justify-content: center;
       align-items: center;
-      flex-grow: 1; /* 메인 영역이 남는 공간을 차지하도록 설정 */
-      padding-top: 2rem; /* 상단바와 겹치지 않도록 여백 추가 */
-      background-size: cover; /* 배경 크기 커버 */
+      padding: 2rem 0;
+      flex-grow: 1;
       width: 100%;
     }
 
-    /* 메뉴 스타일 */
+    /* 카드 목록 */
     nav ul {
       display: flex;
-      gap: 2rem; /* 메뉴 간 간격 */
-      padding: 0;
-      list-style: none;
       justify-content: center;
       align-items: center;
+      gap: 2rem; /* 항목 간 간격 */
+      list-style: none;
+      padding: 0;
+      margin: 0 auto;
+      width: 100%;
+      max-width: 1200px; /* 최대 폭 제한 */
     }
 
     /* 카드 스타일 */
@@ -41,7 +44,10 @@
       padding: 1.5rem;
       text-align: center;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
-      width: 200px; /* 카드 너비 */
+      width: 220px; /* 고정된 카드 너비 */
+      cursor: pointer;
+      text-decoration: none;
+      display: block;
     }
 
     .card:hover {
@@ -49,61 +55,91 @@
       box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
     }
 
+    /* 카드 아이콘 */
     .card-icon {
-      font-size: 2rem;
+      font-size: 2.5rem;
       color: #4ca1af;
       margin-bottom: 1rem;
     }
 
-    .card a {
-      text-decoration: none;
+    /* 카드 제목 */
+    h2 {
+      font-size: 1.2rem;
+      margin: 0.5rem 0;
+    }
+
+    /* 설명 스타일 */
+    .card-description {
       color: #4ca1af;
       font-weight: bold;
-      display: block;
-      margin-top: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    /* 반응형 디자인 */
+    @media (max-width: 768px) {
+      nav ul {
+        flex-wrap: wrap; /* 작은 화면에서 항목 줄바꿈 */
+        gap: 1.5rem; /* 간격 줄이기 */
+      }
+
+      .card {
+        padding: 1rem;
+      }
+
+      .card-icon {
+        font-size: 2rem;
+      }
+
+      h2 {
+        font-size: 1rem;
+      }
     }
   </style>
 
   <nav>
     <ul>
       <li>
-        <div class="card">
+        <a href="/home/nearby-gyms" class="card">
           <i class="fas fa-map-marker-alt card-icon"></i>
           <h2>Nearby Gyms</h2>
-          <a href="/home/nearby-gyms">Search Nearby Gyms</a>
-        </div>
+          <p class="card-description">Search Nearby Gyms</p>
+        </a>
       </li>
       <li>
-        <div class="card">
+        <a href="/home/workout-logs" class="card">
           <i class="fas fa-dumbbell card-icon"></i>
           <h2>Workout Log</h2>
-          <a href="/home/workout-logs">My Workout Log</a>
-        </div>
+          <p class="card-description">My Workout Log</p>
+        </a>
       </li>
       <li>
-        <div class="card">
+        <a href="/home/diet-logs" class="card">
           <i class="fas fa-utensils card-icon"></i>
           <h2>Diet Log</h2>
-          <a href="/home/diet-logs">My Diet Log</a>
-        </div>
+          <p class="card-description">My Diet Log</p>
+        </a>
       </li>
       <li>
-        <div class="card">
+        <a href="/home/challenges" class="card">
           <i class="fas fa-users card-icon"></i>
           <h2>My Challenges</h2>
-          <a href="/home/challenges">competition with others</a>
-        </div>
+          <p class="card-description">Competition with Others</p>
+        </a>
       </li>
       <li>
-        <div class="card">
+        <% if (user && user.role === 'admin') { %>
+        <a href="/live-chat/rooms" class="card">
           <i class="fas fa-comments card-icon"></i>
           <h2>Live Consultation</h2>
-          <% if (user && user.role === 'admin') { %>
-          <a href="/live-chat/rooms">Manage Chat Rooms</a>
-          <% } else { %>
-          <a href="/home/live-chat">Start Live Chat</a>
-          <% } %>
-        </div>
+          <p class="card-description">Manage Chat Rooms</p>
+        </a>
+        <% } else { %>
+        <a href="/home/live-chat" class="card">
+          <i class="fas fa-comments card-icon"></i>
+          <h2>Live Consultation</h2>
+          <p class="card-description">Start Live Chat</p>
+        </a>
+        <% } %>
       </li>
     </ul>
   </nav>

@@ -1,33 +1,63 @@
 <div id="login-container">
-  <h1>FitConnect Login</h1>
+  <h1>Welcome Back!</h1>
+  <p>Log in to your FitConnect account</p>
   <form action="/login" method="POST">
-    <div>
-      <label for="email">Email:</label>
-      <input type="email" id="email" name="email" required />
+    <div class="input-group">
+      <label for="email">Email</label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        placeholder="Enter your email"
+        required
+      />
     </div>
-    <div>
-      <label for="password">Password:</label>
-      <input type="password" id="password" name="password" required />
+    <div class="input-group">
+      <label for="password">Password</label>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        placeholder="Enter your password"
+        required
+      />
     </div>
     <button type="submit">Login</button>
   </form>
-  <p>Don't have an account? <a href="/register">Register here</a></p>
+  <p>Don't have an account? <a href="/register">Create one here</a></p>
 </div>
+
 <style>
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #007bff, #6610f2);
+  }
+
   #login-container {
     width: 100%;
-    max-width: 400px;
+    max-width: 360px;
     background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
     text-align: center;
   }
 
   #login-container h1 {
-    font-size: 24px;
-    margin-bottom: 20px;
+    font-size: 28px;
+    margin-bottom: 10px;
     color: #333;
+  }
+
+  #login-container p {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
   }
 
   form {
@@ -36,28 +66,34 @@
     gap: 15px;
   }
 
-  label {
+  .input-group {
     text-align: left;
-    font-weight: bold;
-    font-size: 14px;
-    margin-bottom: 5px;
   }
 
-  input[type='text'],
+  label {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    display: block;
+    color: #555;
+  }
+
+  input[type='email'],
   input[type='password'] {
-    padding: 12px;
+    width: 100%;
+    padding: 12px 15px;
     font-size: 16px;
     border: 1px solid #ccc;
-    border-radius: 5px;
+    border-radius: 8px;
     box-sizing: border-box;
-    width: 100%;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
   }
 
-  input[type='text']:focus,
+  input[type='email']:focus,
   input[type='password']:focus {
     outline: none;
     border-color: #007bff;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
   }
 
   button {
@@ -65,27 +101,42 @@
     background: #007bff;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     font-size: 16px;
+    font-weight: bold;
     cursor: pointer;
-    transition: background 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
   }
 
   button:hover {
     background: #0056b3;
+    transform: translateY(-2px);
   }
 
   p {
     margin-top: 15px;
     font-size: 14px;
+    color: #333;
   }
 
   a {
     color: #007bff;
     text-decoration: none;
+    font-weight: bold;
   }
 
   a:hover {
     text-decoration: underline;
+  }
+
+  @media (max-width: 768px) {
+    #login-container {
+      padding: 20px;
+    }
+
+    button {
+      font-size: 14px;
+      padding: 10px;
+    }
   }
 </style>

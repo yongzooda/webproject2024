@@ -1,51 +1,138 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Add Workout Log</title>
-    <link rel="stylesheet" href="/styles.css" />
-  </head>
-  <body>
-    <header>
-      <h1>Add Workout Log</h1>
-    </header>
-    <main>
-      <form
-        action="/home/workout-log"
-        method="POST"
-        enctype="multipart/form-data"
-      >
-        <div>
-          <label for="username">Name:</label>
-          <input type="text" id="username" name="username" required />
-        </div>
-        <div>
-          <label for="title">Title:</label>
-          <input type="text" id="title" name="title" required />
-        </div>
-        <div>
-          <label for="exercise">Exercise:</label>
-          <input type="text" id="exercise" name="exercise" required />
-        </div>
-        <div>
-          <label for="duration">Duration (minutes):</label>
-          <input type="number" id="duration" name="duration" required />
-        </div>
-        <div>
-          <label for="date">Date:</label>
-          <input type="date" id="date" name="date" required />
-        </div>
-        <div>
-          <label for="description">Description:</label>
-          <textarea id="description" name="description" rows="5"></textarea>
-        </div>
-        <div>
-          <label for="image">Image:</label>
-          <input type="file" id="image" name="image" />
-        </div>
-        <button type="submit">Add Log</button>
-      </form>
-    </main>
-  </body>
-</html>
+<main>
+  <style>
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      margin-top: 27rem; /* 상단바와 간격 확보 */
+      width: 100%;
+      max-width: 800px; /* 중앙 정렬과 적절한 너비 */
+      margin-left: auto;
+      margin-right: auto;
+      background-color: #f9f9f9; /* 메인 배경 색상 */
+    }
+
+    .page-logo {
+      width: 100%; /* 로고가 화면 전체 너비 */
+      padding: 1.5rem 0; /* 위아래 여백 */
+      text-align: center; /* 텍스트 중앙 정렬 */
+      background-color: #1976d2; /* 더 세련된 파란색 배경 */
+      color: white; /* 텍스트 색상 */
+      font-size: 2.5rem;
+      font-family: 'Roboto', sans-serif;
+      font-weight: bold;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* 그림자 */
+      margin-bottom: 2rem; /* 로고와 폼 간격 */
+      border-radius: 8px; /* 부드러운 모서리 */
+    }
+
+    .container {
+      background: white;
+      border-radius: 12px; /* 더 부드러운 모서리 */
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); /* 컨테이너 그림자 */
+      padding: 2.5rem;
+      width: 90%;
+      max-width: 400px; /* 폼 너비 제한 */
+      margin: 0 auto; /* 중앙 정렬 */
+    }
+
+    form {
+      display: flex;
+      flex-direction: column; /* 입력 필드가 세로로 정렬되도록 */
+      gap: 1.5rem; /* 필드 간 간격 */
+      margin-top: 1rem;
+    }
+
+    label {
+      display: block;
+      font-size: 1.1rem;
+      font-family: 'Roboto', sans-serif;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #555;
+      text-align: left; /* 레이블 정렬 */
+    }
+
+    input[type='text'],
+    input[type='number'],
+    input[type='date'],
+    input[type='file'],
+    textarea {
+      width: 100%;
+      padding: 0.9rem;
+      font-size: 1rem;
+      font-family: 'Roboto', sans-serif;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: #1976d2; /* 포커스 시 테두리 색상 */
+      box-shadow: 0 0 6px rgba(25, 118, 210, 0.4); /* 포커스 시 그림자 효과 */
+      outline: none;
+    }
+
+    textarea {
+      resize: none; /* 크기 조절 비활성화 */
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 1rem;
+      font-size: 1.2rem;
+      font-family: 'Roboto', sans-serif;
+      font-weight: bold;
+      color: white;
+      background-color: #1976d2; /* 버튼 색상 변경 */
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .submit-btn:hover {
+      background-color: #1565c0; /* 버튼 호버 색상 */
+      transform: translateY(-2px); /* 버튼 약간 상승 효과 */
+    }
+  </style>
+
+  <!-- 페이지 로고 -->
+  <div class="page-logo">Add Workout Log</div>
+
+  <!-- 폼 컨테이너 -->
+  <div class="container">
+    <form
+      action="/home/workout-log"
+      method="POST"
+      enctype="multipart/form-data"
+    >
+      <label for="username">Name:</label>
+      <input type="text" id="username" name="username" required />
+
+      <label for="title">Title:</label>
+      <input type="text" id="title" name="title" required />
+
+      <label for="exercise">Exercise:</label>
+      <input type="text" id="exercise" name="exercise" required />
+
+      <label for="duration">Duration (minutes):</label>
+      <input type="number" id="duration" name="duration" required />
+
+      <label for="date">Date:</label>
+      <input type="date" id="date" name="date" required />
+
+      <label for="description">Description:</label>
+      <textarea id="description" name="description" rows="5"></textarea>
+
+      <label for="image">Image:</label>
+      <input type="file" id="image" name="image" />
+
+      <button type="submit" class="submit-btn">Add Workout Log</button>
+    </form>
+  </div>
+</main>

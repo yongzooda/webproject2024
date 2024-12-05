@@ -1,26 +1,112 @@
-<form action="/home/challenges/set-goals" method="POST">
-  <h3>운동 목표 설정</h3>
-  <label for="month">월 선택:</label>
-  <input type="month" id="month" name="month" required />
+<style>
+  body {
+    font-family: 'Roboto', sans-serif; /* 세련된 폰트 */
+    margin: 0;
+    padding: 0;
+    background-color: #f4f7fc; /* 부드러운 배경색 */
+  }
 
-  <label for="workoutGoal">운동 목표 (횟수):</label>
-  <input type="number" id="workoutGoal" name="workoutGoal" required />
+  main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* 화면 전체 높이를 차지 */
+    padding: 20px;
+    background-color: #f4f7fc;
+    margin-top: 20rem; /* 상단바와 간격 확보 */
+  }
 
-  <label for="workoutTimeGoal">운동 목표 시간 (분):</label>
-  <input type="number" id="workoutTimeGoal" name="workoutTimeGoal" required />
+  form {
+    background-color: #ffffff; /* 폼 배경색 */
+    border-radius: 12px; /* 부드러운 모서리 */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* 그림자 */
+    padding: 2rem;
+    width: 100%;
+    max-width: 500px; /* 폼 최대 너비 */
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; /* 항목 간 간격 */
+  }
 
-  <h3>식단 목표 설정</h3>
-  <label for="proteinGoal">단백질 (g):</label>
-  <input type="number" id="proteinGoal" name="proteinGoal" required />
+  h3 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #1e88e5; /* 파란색으로 강조 */
+    margin-bottom: 0.5rem;
+    text-align: center;
+  }
 
-  <label for="carbGoal">탄수화물 (g):</label>
-  <input type="number" id="carbGoal" name="carbGoal" required />
+  label {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: #555; /* 중간 밝기의 텍스트 색상 */
+  }
 
-  <label for="fatGoal">지방 (g):</label>
-  <input type="number" id="fatGoal" name="fatGoal" required />
+  input {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
 
-  <label for="sugarGoal">당 (g):</label>
-  <input type="number" id="sugarGoal" name="sugarGoal" required />
+  input:focus {
+    border-color: #1e88e5; /* 포커스 시 테두리 색상 */
+    box-shadow: 0 0 8px rgba(30, 136, 229, 0.3); /* 포커스 시 그림자 */
+    outline: none;
+  }
 
-  <button type="submit">목표 저장</button>
-</form>
+  button {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: white;
+    background-color: #1e88e5; /* 버튼 색상 */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+
+  button:hover {
+    background-color: #1565c0; /* 버튼 호버 색상 */
+    transform: translateY(-2px); /* 살짝 떠오르는 효과 */
+  }
+
+  button:active {
+    transform: translateY(1px); /* 클릭 시 눌리는 효과 */
+  }
+</style>
+
+<main>
+  <form action="/home/challenges/set-goals" method="POST">
+    <h3>운동 목표 설정</h3>
+    <label for="month">월 선택:</label>
+    <input type="month" id="month" name="month" required />
+
+    <label for="workoutGoal">운동 목표 (횟수):</label>
+    <input type="number" id="workoutGoal" name="workoutGoal" required />
+
+    <label for="workoutTimeGoal">운동 목표 시간 (분):</label>
+    <input type="number" id="workoutTimeGoal" name="workoutTimeGoal" required />
+
+    <h3>식단 목표 설정</h3>
+    <label for="proteinGoal">단백질 (g):</label>
+    <input type="number" id="proteinGoal" name="proteinGoal" required />
+
+    <label for="carbGoal">탄수화물 (g):</label>
+    <input type="number" id="carbGoal" name="carbGoal" required />
+
+    <label for="fatGoal">지방 (g):</label>
+    <input type="number" id="fatGoal" name="fatGoal" required />
+
+    <label for="sugarGoal">당 (g):</label>
+    <input type="number" id="sugarGoal" name="sugarGoal" required />
+
+    <button type="submit">목표 저장</button>
+  </form>
+</main>

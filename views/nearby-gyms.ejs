@@ -1,57 +1,108 @@
-<!-- 페이지 전용 스타일 -->
-<!-- 상단바 스타일은 main.ejs에서 관리 -->
 <style>
+  /* 전체 페이지 스타일 */
+  body {
+    font-family: 'Roboto', sans-serif; /* 모던한 폰트 */
+    margin: 0;
+    padding: 0;
+    background-color: #f4f7fc; /* 부드러운 배경색 */
+  }
+
   main {
     display: flex;
     width: 100%;
     margin: 0;
-    padding: 0; /* 공백 제거 */
-    height: calc(100vh - 60px); /* 상단바 높이를 제외한 높이 설정 */
+    padding: 0;
+    height: calc(100vh - 60px); /* 상단바 높이 제외 */
     overflow: hidden; /* main 자체 스크롤 제거 */
   }
 
+  /* 헬스장 목록 영역 */
   #gym-list {
-    flex: 0 0 40%; /* 헬스장 목록 영역 너비 */
+    flex: 0 0 40%; /* 헬스장 목록 너비 */
     height: 100%; /* main 높이 상속 */
-    overflow-y: auto; /* 헬스장 목록 스크롤 */
-    background: #f9f9f9;
-    padding: 1rem;
-    border-right: 1px solid #ddd;
+    overflow-y: auto; /* 스크롤 활성화 */
+    background: #ffffff; /* 깔끔한 흰색 배경 */
+    padding: 1.5rem;
+    border-right: 1px solid #ddd; /* 구분선 */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
   }
 
   .gym-card {
-    background-color: #ffffff;
-    color: #333;
-    margin-bottom: 1rem;
-    padding: 1rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s, background-color 0.3s;
+    background-color: #ffffff; /* 카드 배경 */
+    color: #333; /* 텍스트 색상 */
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    border-radius: 12px; /* 부드러운 모서리 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 */
+    transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
   }
 
   .gym-card:hover {
-    transform: scale(1.05);
-    background-color: #e6f7ff;
+    transform: translateY(-5px); /* 살짝 올라오는 효과 */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2); /* 강조된 그림자 */
+    background-color: #e3f2fd; /* 부드러운 파란색 강조 */
   }
 
   .gym-card h2 {
-    font-size: 1rem;
+    font-size: 1.2rem;
     margin-bottom: 0.5rem;
-    color: #007bff;
+    color: #1e88e5; /* 세련된 파란색 */
     font-weight: bold;
   }
 
   .gym-card p {
-    font-size: 0.9rem;
-    margin: 0.2rem 0;
-    color: #555;
+    font-size: 0.95rem;
+    margin: 0.3rem 0;
+    color: #555; /* 중간 밝기의 텍스트 색상 */
   }
 
+  /* 지도 영역 */
   #map {
     flex: 0 0 60%; /* 지도 영역 너비 */
     height: 100%; /* main 높이 상속 */
+    border-left: 1px solid #ddd; /* 구분선 */
+  }
+
+  /* 지도 안의 마커 및 정보 창 스타일 */
+  .gm-style-iw {
+    font-family: 'Roboto', sans-serif !important;
+    color: #333 !important;
+    line-height: 1.5 !important;
+  }
+
+  .gm-style-iw h2 {
+    font-size: 1.1rem !important;
+    margin: 0 0 0.5rem !important;
+    color: #007bff !important; /* 세련된 파란색 */
+  }
+
+  .gm-style-iw p {
+    margin: 0.2rem 0 !important;
+    color: #555 !important;
+    font-size: 0.95rem !important;
+  }
+
+  .gm-style-iw img {
+    border-radius: 8px !important; /* 이미지 모서리 */
+    max-width: 100% !important; /* 반응형 이미지 */
+    margin-top: 0.5rem !important;
+  }
+
+  /* 스크롤바 스타일 (헬스장 목록) */
+  #gym-list::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  #gym-list::-webkit-scrollbar-thumb {
+    background: #1e88e5;
+    border-radius: 10px;
+  }
+
+  #gym-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
   }
 </style>
+
 
 <main>
   <!-- 페이지 콘텐츠 -->
