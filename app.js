@@ -12,6 +12,7 @@ const liveChatRoutes = require('./routes/liveChat');
 const chatController = require('./controllers/chatController');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
+const cors = require('cors');
 
 const app = express();
 const server = http.createServer(app); // HTTP 서버 생성
@@ -20,6 +21,9 @@ const io = new Server(server);
 const expressLayouts = require('express-ejs-layouts');
 
 const PORT = process.env.PORT || 3000;
+
+// 기본 CORS 설정
+app.use(cors());
 
 // 환경 변수 로드 (JWT_SECRET 설정 필요)
 require('dotenv').config();
@@ -82,6 +86,11 @@ app.use('/', logoutRoutes);
 app.use('/register', registerRoutes);
 app.use('/home', homeRoutes);
 app.use('/live-chat', liveChatRoutes);
+
+// 다른 미들웨어와 라우트 정의 이후에 추가
+app.use((req, res, next) => {
+  res.status(404).json({ error: 'Route not found' });
+});
 
 // Socket.IO 인증 처리 및 이벤트 처리
 io.on('connection', (socket) => {
