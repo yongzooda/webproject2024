@@ -65,3 +65,50 @@ exports.getNearbyGyms = async (req, res) => {
     res.status(500).send('Error fetching gyms');
   }
 };
+
+exports.addFavoriteGym = async (req, res) => {
+  console.log('addFavoriteGym 라우트에 요청이 도달했습니다');
+
+  console.log('Request body:', req.body); // 요청 데이터 확인
+  const { name, address, phoneNumber, rating, photoUrl, distance } = req.body;
+
+  if (!req.user) {
+    console.error('User not authenticated');
+    return res.status(401).json({ message: '로그인이 필요합니다.' });
+  }
+
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      console.error('User not found');
+      return res.status(404).json({ message: '사용자를 찾을 수 없습니다.' });
+    }
+
+    // 찜한 헬스장이 이미 존재하는지 확인
+    const isAlreadyFavorited = user.favoriteGyms.some(
+      (gym) => gym.name === name && gym.address === address
+    );
+
+    if (isAlreadyFavorited) {
+      console.error('Gym already favorited:', name);
+      return res.status(400).json({ message: '이미 찜한 헬스장입니다.' });
+    }
+
+    user.favoriteGyms.push({
+      name,
+      address,
+      phoneNumber,
+      rating,
+      photoUrl,
+      distance,
+    });
+    await user.save();
+
+    console.log('Favorite gym added:', { name, address });
+    res.status(200).json({ message: '헬스장이 찜 목록에 추가되었습니다.' });
+  } catch (error) {
+    console.error('찜 목록 추가 중 오류:', error);
+    res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+  }
+};

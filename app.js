@@ -87,9 +87,9 @@ app.use('/register', registerRoutes);
 app.use('/home', homeRoutes);
 app.use('/live-chat', liveChatRoutes);
 
-// 다른 미들웨어와 라우트 정의 이후에 추가
 app.use((req, res, next) => {
-  res.status(404).json({ error: 'Route not found' });
+  console.log(`요청 경로: ${req.path}, 요청 메서드: ${req.method}`);
+  next();
 });
 
 // Socket.IO 인증 처리 및 이벤트 처리
