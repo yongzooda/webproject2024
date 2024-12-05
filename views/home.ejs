@@ -1,100 +1,128 @@
-<main>
-  <style>
-    /* 전체 화면 설정 */
-    body {
-      margin: 0;
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(to bottom, #2c3e50, #4ca1af);
-      color: #fff;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+<style>
+  /* 전체 화면 설정 */
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(to bottom, #2c3e50, #4ca1af);
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 
-    /* 메인 섹션 */
-    main {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 2rem 0;
-      flex-grow: 1;
-      width: 100%;
-    }
+  /* 메인 섹션 */
+  main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 0;
+    flex-grow: 1;
+    width: 100%;
+  }
 
-    /* 카드 목록 */
+  /* 카드 목록 */
+  nav ul {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem; /* 항목 간 간격 */
+    list-style: none;
+    padding: 0;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 1200px; /* 최대 폭 제한 */
+  }
+
+  /* 카드 스타일 */
+  .card {
+    background-color: #ffffff;
+    color: #333;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    padding: 1.5rem;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    width: 220px; /* 고정된 카드 너비 */
+    cursor: pointer;
+    text-decoration: none;
+    display: block;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+  }
+
+  /* 카드 아이콘 */
+  .card-icon {
+    font-size: 2.5rem;
+    color: #4ca1af;
+    margin-bottom: 1rem;
+  }
+
+  /* 카드 제목 */
+  h2 {
+    font-size: 1.2rem;
+    margin: 0.5rem 0;
+  }
+
+  /* 설명 스타일 */
+  .card-description {
+    color: #4ca1af;
+    font-weight: bold;
+    margin-top: 0.5rem;
+  }
+
+  /* 반응형 디자인 */
+  @media (max-width: 768px) {
     nav ul {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 2rem; /* 항목 간 간격 */
-      list-style: none;
-      padding: 0;
-      margin: 0 auto;
-      width: 100%;
-      max-width: 1200px; /* 최대 폭 제한 */
+      flex-wrap: wrap; /* 작은 화면에서 항목 줄바꿈 */
+      gap: 1.5rem; /* 간격 줄이기 */
     }
 
-    /* 카드 스타일 */
     .card {
-      background-color: #ffffff;
-      color: #333;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      padding: 1.5rem;
-      text-align: center;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      width: 220px; /* 고정된 카드 너비 */
-      cursor: pointer;
-      text-decoration: none;
-      display: block;
+      padding: 1rem;
     }
 
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
-    }
-
-    /* 카드 아이콘 */
     .card-icon {
-      font-size: 2.5rem;
-      color: #4ca1af;
-      margin-bottom: 1rem;
+      font-size: 2rem;
     }
 
-    /* 카드 제목 */
     h2 {
-      font-size: 1.2rem;
-      margin: 0.5rem 0;
+      font-size: 1rem;
     }
+  }
 
-    /* 설명 스타일 */
-    .card-description {
-      color: #4ca1af;
-      font-weight: bold;
-      margin-top: 0.5rem;
-    }
+  /* 마이페이지 버튼 스타일 */
+  .mypage-button {
+    position: absolute;
+    top: 1rem; /* 화면 상단에서 간격 */
+    right: 1rem; /* 화면 오른쪽에서 간격 */
+    background: #4ca1af;
+    color: #fff;
+    padding: 0.8rem 1.2rem;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: bold;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: background 0.3s, transform 0.3s;
+  }
 
-    /* 반응형 디자인 */
-    @media (max-width: 768px) {
-      nav ul {
-        flex-wrap: wrap; /* 작은 화면에서 항목 줄바꿈 */
-        gap: 1.5rem; /* 간격 줄이기 */
-      }
+  .mypage-button:hover {
+    background: #2c3e50;
+    transform: translateY(-2px);
+  }
+</style>
 
-      .card {
-        padding: 1rem;
-      }
-
-      .card-icon {
-        font-size: 2rem;
-      }
-
-      h2 {
-        font-size: 1rem;
-      }
-    }
-  </style>
+<main>
+  <!-- 마이페이지 버튼 -->
+  <% if (user) { %>
+  <a href="/home/mypage" class="mypage-button">마이페이지</a>
+  <% } %>
 
   <nav>
     <ul>

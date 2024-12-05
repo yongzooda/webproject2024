@@ -59,8 +59,15 @@ exports.addDietLog = async (req, res) => {
 // 식단 일지 수정 처리
 exports.editDietLog = async (req, res) => {
   const { id } = req.params;
-  const { title, foodName, calories, nutrition, mealTime, description } =
-    req.body;
+  const {
+    title,
+    foodName,
+    calories,
+    nutrition,
+    mealTime,
+    description,
+    redirectTo,
+  } = req.body;
   const image = req.file ? req.file.filename : null;
 
   try {
@@ -91,6 +98,12 @@ exports.editDietLog = async (req, res) => {
     }
 
     await log.save();
+
+    // redirectTo 값을 사용하여 리다이렉트
+    if (redirectTo && redirectTo.includes('/home/mypage')) {
+      return res.redirect('/home/mypage');
+    }
+
     res.redirect('/home/diet-logs');
   } catch (error) {
     console.error('Error editing diet log:', error);
@@ -149,6 +162,13 @@ exports.deleteDietLog = async (req, res) => {
     }
 
     await log.deleteOne(); // MongoDB에서 해당 식단 일지 삭제
+
+    // 이전 페이지가 마이페이지인지 확인
+    const referer = req.headers.referer;
+    if (referer && referer.includes('/home/mypage')) {
+      return res.redirect('/home/mypage');
+    }
+
     res.redirect('/home/diet-logs');
   } catch (error) {
     console.error('Error deleting diet log:', error);

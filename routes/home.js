@@ -9,16 +9,30 @@ const multer = require('multer');
 const workoutLogController = require('../controllers/workoutLogController');
 const dietLogController = require('../controllers/dietLogController');
 const challengeController = require('../controllers/challengeController');
+const mypageController = require('../controllers/mypageController');
 
 const authenticateJWT = require('../middlewares/auth');
 
 // 홈 페이지 라우트
 router.get('/', authenticateJWT, homeController.getMenuPage);
 
+//마이페이지 라우트
+router.get('/mypage', authenticateJWT, mypageController.renderMyPage);
+router.post(
+  '/mypage/change-password',
+  authenticateJWT,
+  mypageController.changePassword
+);
+
 // 주변 헬스장 검색 페이지 렌더링 (EJS 템플릿 반환)
 router.get('/nearby-gyms', authenticateJWT, gymController.getNearbyGymsPage);
 // 주변 헬스장 검색 데이터 API (위치 데이터를 기반으로 JSON 반환)
 router.get('/api/nearby-gyms', authenticateJWT, gymController.getNearbyGyms);
+//찜하기 기능 라우트
+router.post('/nearby-gyms/favorites', authenticateJWT, (req, res) => {
+  console.log('라우트에 도달했습니다: /nearby-gyms/favorites');
+  res.status(200).json({ message: '라우트 확인 성공' });
+});
 
 // /home/workout-log 요청 시 /home/workout-logs로 리다이렉트
 router.get('/workout-log', authenticateJWT, (req, res) => {

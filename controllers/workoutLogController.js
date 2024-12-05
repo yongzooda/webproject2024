@@ -58,7 +58,7 @@ exports.addWorkoutLog = async (req, res) => {
 //운동 일지 수정 처리
 exports.editWorkoutLog = async (req, res) => {
   const { id } = req.params;
-  const { title, exercise, duration, date, description } = req.body;
+  const { title, exercise, duration, date, description, redirectTo } = req.body;
   const image = req.file ? req.file.filename : null;
 
   try {
@@ -88,6 +88,12 @@ exports.editWorkoutLog = async (req, res) => {
     }
 
     await log.save();
+
+    // redirectTo 값을 사용하여 리다이렉트
+    if (redirectTo && redirectTo.includes('/home/mypage')) {
+      return res.redirect('/home/mypage');
+    }
+
     res.redirect('/home/workout-logs');
   } catch (error) {
     console.error('Error editing workout log:', error);
@@ -146,6 +152,13 @@ exports.deleteWorkoutLog = async (req, res) => {
     }
 
     await log.deleteOne(); // MongoDB에서 해당 운동 일지 삭제
+
+    // 이전 페이지가 마이페이지인지 확인
+    const referer = req.headers.referer;
+    if (referer && referer.includes('/home/mypage')) {
+      return res.redirect('/home/mypage');
+    }
+
     res.redirect('/home/workout-logs');
   } catch (error) {
     console.error('Error deleting workout log:', error);
