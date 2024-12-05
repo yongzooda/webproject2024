@@ -98,14 +98,14 @@
   /* 마이페이지 버튼 스타일 */
   .mypage-button {
     position: absolute;
-    top: 1rem; /* 화면 상단에서 간격 */
-    right: 1rem; /* 화면 오른쪽에서 간격 */
+    top: 5rem; /* 상단에서 5rem만큼 내려오게 설정 */
+    right: 2rem; /* 화면 오른쪽에서 간격 */
     background: #4ca1af;
     color: #fff;
-    padding: 0.8rem 1.2rem;
+    padding: 1rem 1.5rem; /* 여백 추가 */
     border: none;
-    border-radius: 5px;
-    font-size: 1rem;
+    border-radius: 25px; /* 버튼을 둥글게 */
+    font-size: 1.2rem; /* 글씨 크기 키우기 */
     font-weight: bold;
     text-decoration: none;
     cursor: pointer;
@@ -115,7 +115,9 @@
 
   .mypage-button:hover {
     background: #2c3e50;
-    transform: translateY(-2px);
+    color: #fff;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
   }
 </style>
 
