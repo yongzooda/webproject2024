@@ -81,41 +81,48 @@
     margin: 0.3rem 0;
   }
 
-  form {
+  /* 버튼 컨테이너 */
+  .button-container {
     display: flex;
-    flex-direction: column;
-    gap: 1rem;
+    justify-content: space-between; /* 버튼 간격 조정 */
+    margin-top: 1rem;
   }
 
-  form label {
-    font-size: 1rem;
-    color: #555;
-  }
-
-  form input {
-    padding: 0.8rem;
-    font-size: 1rem;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-  }
-
-  form button {
+  /* 공통 버튼 스타일 */
+  .btn {
     padding: 0.8rem 1.5rem;
     font-size: 1rem;
-    background-color: #4ca1af;
-    color: white;
+    font-weight: bold;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
   }
 
-  form button:hover {
+  /* 수정 버튼 스타일 */
+  .btn-edit {
+    background-color: #4ca1af;
+    color: white;
+    text-decoration: none;
+  }
+
+  .btn-edit:hover {
     background-color: #2c3e50;
+    transform: translateY(-2px);
+  }
+
+  /* 삭제 버튼 스타일 */
+  .btn-delete {
+    background-color: #f44336;
+    color: white;
+  }
+
+  .btn-delete:hover {
+    background-color: #d32f2f;
+    transform: translateY(-2px);
   }
 
   /* 반응형 디자인 */
-
   @media (max-width: 768px) {
     .content {
       grid-template-columns: 1fr; /* 작은 화면에서는 세로로 배치 */
@@ -154,14 +161,17 @@
             <li><%= comment.username %>: <%= comment.text %></li>
             <% }); %>
           </ul>
-          <!-- 수정 버튼 -->
-          <a href="/home/workout-log/<%= log._id %>/edit" class="btn btn-edit"
-            >수정</a
-          >
-          <!-- 삭제 버튼 -->
-          <form action="/home/workout-log/<%= log._id %>/delete" method="POST">
-            <button type="submit" class="btn btn-delete">삭제</button>
-          </form>
+          <div class="button-container">
+            <a href="/home/workout-log/<%= log._id %>/edit" class="btn btn-edit"
+              >수정</a
+            >
+            <form
+              action="/home/workout-log/<%= log._id %>/delete"
+              method="POST"
+            >
+              <button type="submit" class="btn btn-delete">삭제</button>
+            </form>
+          </div>
         </div>
         <% }); %>
       </div>
@@ -185,14 +195,14 @@
             <li><%= comment.username %>: <%= comment.text %></li>
             <% }); %>
           </ul>
-          <!-- 수정 버튼 -->
-          <a href="/home/diet-log/<%= log._id %>/edit" class="btn btn-edit"
-            >수정</a
-          >
-          <!-- 삭제 버튼 -->
-          <form action="/home/diet-log/<%= log._id %>/delete" method="POST">
-            <button type="submit" class="btn btn-delete">삭제</button>
-          </form>
+          <div class="button-container">
+            <a href="/home/diet-log/<%= log._id %>/edit" class="btn btn-edit"
+              >수정</a
+            >
+            <form action="/home/diet-log/<%= log._id %>/delete" method="POST">
+              <button type="submit" class="btn btn-delete">삭제</button>
+            </form>
+          </div>
         </div>
         <% }); %>
       </div>
@@ -204,6 +214,11 @@
     <!-- 비밀번호 변경 섹션 -->
     <section class="section">
       <h2>비밀번호 변경</h2>
+
+      <% if (messages.success) { %>
+      <div class="alert alert-success"><%= messages.success %></div>
+      <% } %>
+
       <form action="/home/mypage/change-password" method="POST">
         <label for="oldPassword">기존 비밀번호:</label>
         <input type="password" id="oldPassword" name="oldPassword" required />

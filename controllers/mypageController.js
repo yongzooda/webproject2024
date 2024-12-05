@@ -1,6 +1,7 @@
 const DietLog = require('../models/DietLog');
 const WorkoutLog = require('../models/WorkoutLog');
 const User = require('../models/user');
+const bcrypt = require('bcrypt');
 
 // 마이페이지 렌더링
 exports.renderMyPage = async (req, res) => {
@@ -32,19 +33,33 @@ exports.renderMyPage = async (req, res) => {
 // 비밀번호 변경
 exports.changePassword = async (req, res) => {
   try {
-    const { userId } = req.user; // 현재 로그인된 사용자
+    const userId = req.user._id; // 현재 로그인된 사용자
     const { oldPassword, newPassword } = req.body;
 
+    // 사용자 검색
     const user = await User.findById(userId);
 
-    if (!user || user.password !== oldPassword) {
+    if (!user) {
+      return res.status(404).send('사용자를 찾을 수 없습니다.');
+    }
+
+    // 기존 비밀번호 비교
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) {
       return res.status(400).send('기존 비밀번호가 일치하지 않습니다.');
     }
 
-    user.password = newPassword;
+    // 새 비밀번호 해싱
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // 비밀번호 업데이트
+    user.password = hashedPassword;
     await user.save();
 
-    res.status(200).send('비밀번호가 성공적으로 변경되었습니다.');
+    // 마이페이지로 리다이렉트
+    req.flash('success', '비밀번호가 성공적으로 변경되었습니다.');
+    res.redirect('/home/mypage');
   } catch (error) {
     console.error(error);
     res.status(500).send('서버 오류가 발생했습니다.');

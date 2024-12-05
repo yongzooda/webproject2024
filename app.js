@@ -13,6 +13,8 @@ const chatController = require('./controllers/chatController');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
+const session = require('express-session');
+const flash = require('connect-flash');
 
 const app = express();
 const server = http.createServer(app); // HTTP 서버 생성
@@ -21,6 +23,20 @@ const io = new Server(server);
 const expressLayouts = require('express-ejs-layouts');
 
 const PORT = process.env.PORT || 3000;
+
+//Flash 메시지를 사용한 개선
+app.use(
+  session({
+    secret: 'your-secret-key',
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+app.use(flash());
+app.use((req, res, next) => {
+  res.locals.messages = req.flash();
+  next();
+});
 
 // 기본 CORS 설정
 app.use(cors());
