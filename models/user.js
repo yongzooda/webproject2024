@@ -1,13 +1,6 @@
-const mongoose = require('mongoose');
+//user.js
 
-const gymSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  address: { type: String },
-  phoneNumber: { type: String },
-  photoUrl: { type: String },
-  rating: { type: Number },
-  distance: { type: Number },
-});
+const mongoose = require('mongoose');
 
 // 월별 목표를 위한 서브 스키마 추가
 const goalSchema = new mongoose.Schema({
@@ -32,7 +25,6 @@ const userSchema = new mongoose.Schema({
   interests: [String],
   role: { type: String, enum: ['user', 'admin'], default: 'user' }, // 역할 필드
   monthlyGoals: [goalSchema], // 월별 목표 배열
-  favoriteGyms: [gymSchema], // 찜한 헬스장 정보 추가
 });
 
 module.exports = mongoose.models.User || mongoose.model('User', userSchema);
