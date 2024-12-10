@@ -294,7 +294,7 @@ function addMarkersToMap(gyms) {
                 )} km</p>`
               : ''
           }
-          <button style="margin-top: 10px; padding: 5px 10px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;" onclick="addToFavorites('${gym.name}', '${gym.vicinity}', '${gym.phoneNumber}', '${gym.rating}', '${gym.photoUrl}', '${gym.distance}')">찜하기</button>
+          
         </div>
       `,
     });
@@ -305,40 +305,6 @@ function addMarkersToMap(gyms) {
 
     markers[index] = { marker, infoWindow };
   });
-}
-
-async function addToFavorites(name, vicinity, phoneNumber, rating, photoUrl, distance) {
-  try {
-    const response = await fetch('/nearby-gyms/favorites', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        name,
-        address: vicinity,
-        phoneNumber,
-        rating,
-        photoUrl,
-        distance,
-      }),
-    });
-
-    if (response.ok) {
-      alert('헬스장이 찜 목록에 추가되었습니다!');
-    } else {
-      // 응답 데이터가 JSON일 가능성 확인
-      let error = await response.json().catch(() => null);
-      if (error && error.message) {
-        alert(`찜하기 실패: ${error.message}`);
-      } else {
-        alert('찜하기 실패: 서버 오류 발생');
-      }
-    }
-  } catch (err) {
-    console.error('찜하기 요청 중 오류 발생:', err);
-    alert('찜하기 요청 중 네트워크 오류가 발생했습니다.');
-  }
 }
 
     </script>
