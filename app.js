@@ -22,7 +22,7 @@ const io = new Server(server);
 
 const expressLayouts = require('express-ejs-layouts');
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 //Flash 메시지를 사용한 개선
 app.use(
@@ -156,6 +156,6 @@ io.on('connection', (socket) => {
 });
 
 // 서버 시작
-server.listen(PORT, () => {
+server.listen(PORT, "0.0.0.0",() => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
