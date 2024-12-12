@@ -1,5 +1,16 @@
 //workoutLogController.js
 
+const aws = require('aws-sdk');
+
+// AWS S3 설정
+aws.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: 'us-east-2', // S3 버킷 리전
+});
+
+const s3 = new aws.S3();
+
 const WorkoutLog = require('../models/WorkoutLog');
 
 // 운동 일지 작성 페이지 렌더링
@@ -33,7 +44,11 @@ exports.getWorkoutLogs = async (req, res) => {
 // 운동 일지 추가 처리
 exports.addWorkoutLog = async (req, res) => {
   const { username, title, exercise, duration, date, description } = req.body;
-  const image = req.file ? req.file.filename : null;
+  const image = req.file ? req.file.location : null; // S3 URL 가져오기
+
+  console.log('Request Body:', req.body); // 요청 본문 확인
+  console.log('Uploaded File Info:', req.file); // 업로드된 파일 정보 확인
+
 
   console.log('User Info:', req.user._id);
   try {
@@ -45,7 +60,7 @@ exports.addWorkoutLog = async (req, res) => {
       duration,
       date: new Date(date), // 문자열을 Date 객체로 변환
       description,
-      image,
+      image, // S3 URL 저장
     });
     console.log('New Workout Log Created:', newLog); // 디버깅 메시지 추가
     res.redirect('/home/workout-logs');
@@ -59,7 +74,7 @@ exports.addWorkoutLog = async (req, res) => {
 exports.editWorkoutLog = async (req, res) => {
   const { id } = req.params;
   const { title, exercise, duration, date, description, redirectTo } = req.body;
-  const image = req.file ? req.file.filename : null;
+  const image = req.file ? req.file.location : null; // S3 URL 가져오기
 
   try {
     const log = await WorkoutLog.findById(id);
@@ -84,7 +99,7 @@ exports.editWorkoutLog = async (req, res) => {
     log.date = new Date(date);
     log.description = description;
     if (image) {
-      log.image = image;
+      log.image = image; // S3 URL로 업데이트
     }
 
     await log.save();
@@ -140,32 +155,55 @@ exports.deleteWorkoutLog = async (req, res) => {
   const { id } = req.params;
 
   try {
+    // MongoDB에서 로그 찾기
     const log = await WorkoutLog.findById(id);
     if (!log) {
+      console.error('Workout log not found for deletion');
       return res.status(404).send('Workout log not found');
     }
 
     // 관리자 또는 게시물 작성자만 삭제 가능
     if (req.user.role !== 'admin' && log.username !== req.user.username) {
-      return res
-        .status(403)
-        .send('You do not have permission to delete this log');
+      return res.status(403).send('You do not have permission to delete this log');
     }
 
-    await log.deleteOne(); // MongoDB에서 해당 운동 일지 삭제
+    // S3에서 이미지 삭제
+    if (log.image) {
+      const s3Key = log.image.split('/').slice(-2).join('/');
+      const params = {
+        Bucket: 'fitconnect-images',
+        Key: s3Key,
+      };
 
-    // 이전 페이지가 마이페이지인지 확인
+      try {
+        await s3.deleteObject(params).promise();
+        console.log('Image deleted from S3:', log.image);
+      } catch (error) {
+        console.error('Error deleting image from S3:', error); // 디버깅 메시지 추가
+      }
+    }
+
+    // MongoDB에서 로그 삭제
+    try {
+      await log.deleteOne();
+      console.log('Workout log deleted from database:', log._id);
+    } catch (error) {
+      console.error('Error deleting workout log from database:', error);
+      return res.status(500).send('Error deleting workout log');
+    }
+
+    // 이전 페이지 확인 후 리다이렉트
     const referer = req.headers.referer;
     if (referer && referer.includes('/home/mypage')) {
       return res.redirect('/home/mypage');
     }
-
     res.redirect('/home/workout-logs');
   } catch (error) {
-    console.error('Error deleting workout log:', error);
-    res.status(500).send('Error deleting workout log');
+    console.error('Unexpected error during workout log deletion:', error);
+    res.status(500).send('Unexpected error during workout log deletion');
   }
 };
+
 
 // 댓글 작성 (AJAX 대응)
 exports.addComment = async (req, res) => {
