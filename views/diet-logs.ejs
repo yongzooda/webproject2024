@@ -208,7 +208,7 @@
         </p>
         <p>Description: <%= log.description %></p>
         <% if (log.image) { %>
-        <img src="/uploads/<%= log.image %>" alt="Diet Image" />
+        <img src="<%= log.image %>" alt="Diet Image" />
         <% } %> <% if (user.role === 'admin' || user.username === log.username)
         { %>
         <div class="btn-group">
