@@ -4,13 +4,48 @@ const router = express.Router();
 const homeController = require('../controllers/homeController');
 const gymController = require('../controllers/gymController');
 const path = require('path');
-const multer = require('multer');
+
 const workoutLogController = require('../controllers/workoutLogController');
 const dietLogController = require('../controllers/dietLogController');
 const challengeController = require('../controllers/challengeController');
 const mypageController = require('../controllers/mypageController');
 
 const authenticateJWT = require('../middlewares/auth');
+
+const aws = require('aws-sdk');
+const multer = require('multer');
+const multerS3 = require('multer-s3');
+
+// AWS S3 설정
+aws.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID, // IAM 사용자의 Access Key ID
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY, // IAM 사용자의 Secret Access Key
+  region: 'us-east-2', // S3 버킷의 Region (예: 서울 리전)
+});
+
+const s3 = new aws.S3();
+
+// Multer-S3 설정
+const upload = multer({
+  storage: multerS3({
+    s3: s3,
+    bucket: 'fitconnect-images', // S3 버킷 이름
+    metadata: function (req, file, cb) {
+      cb(null, { fieldName: file.fieldname });
+    },
+    key: function (req, file, cb) {
+      // 파일 이름을 안전하게 변환
+      const safeFileName = file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_');
+      // 업로드 경로 생성
+      const filePath = `uploads/${Date.now()}-${safeFileName}`;
+      console.log('Generated File Path:', filePath); // 생성된 파일 경로 로그 출력
+      cb(null, filePath); // S3에 저장될 파일 경로 전달
+    },
+  }),
+});
+
+
+module.exports = upload;
 
 // 홈 페이지 라우트
 router.get('/', authenticateJWT, homeController.getMenuPage);
@@ -38,16 +73,7 @@ router.get('/workout-log', authenticateJWT, (req, res) => {
   res.redirect('/home/workout-logs');
 });
 
-// Multer 설정
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, '../public/uploads')); // 업로드 폴더 설정
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`); // 파일 이름 설정
-  },
-});
-const upload = multer({ storage }); // multer 인스턴스 생성
+
 
 // 운동 일지 페이지 라우트
 router.get(
@@ -62,7 +88,7 @@ router.get(
 ); // 운동 일지 작성 폼
 router.post(
   '/workout-log',
-  upload.single('image'),
+  upload.single('image'), // S3로 업로드
   workoutLogController.addWorkoutLog
 ); // 운동 일지 작성
 router.get(
@@ -74,7 +100,7 @@ router.get(
 router.post(
   '/workout-log/:id/edit',
   authenticateJWT,
-  upload.single('image'),
+  upload.single('image'), // S3로 업로드
   workoutLogController.editWorkoutLog
 ); // 운동 일지 수정
 
@@ -104,6 +130,7 @@ router.patch(
   workoutLogController.editComment
 ); // 댓글 수정
 
+
 // 식단 일지 페이지 라우트
 router.get('/diet-logs', authenticateJWT, dietLogController.getDietLogs); // 식단 일지 목록
 router.get(
@@ -111,19 +138,24 @@ router.get(
   authenticateJWT,
   dietLogController.getAddDietLogPage
 ); // 식단 일지 작성 폼
-router.post('/diet-log', upload.single('image'), dietLogController.addDietLog); // 식단 일지 작성
+router.post(
+  '/diet-log',
+  upload.single('image'), // S3로 업로드
+  dietLogController.addDietLog
+); // 식단 일지 작성
+
 router.get(
   '/diet-log/:id/edit',
   authenticateJWT,
   dietLogController.getEditDietLogPage
-); // 식단 일지 수정 폼
+); // 운동 일지 수정 폼
 
 router.post(
   '/diet-log/:id/edit',
   authenticateJWT,
-  upload.single('image'),
+  upload.single('image'), // S3로 업로드
   dietLogController.editDietLog
-); // 식단 일지 수정
+);// 식단 일지 수정 폼
 
 router.post(
   '/diet-log/:id/delete',
