@@ -1,5 +1,17 @@
 //dietLogController.js
 
+const aws = require('aws-sdk');
+
+// AWS S3 설정
+aws.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: 'us-east-2', // S3 버킷 리전
+});
+
+const s3 = new aws.S3();
+
+
 const DietLog = require('../models/DietLog');
 
 // 식단 일지 작성 페이지 렌더링
@@ -34,7 +46,7 @@ exports.getDietLogs = async (req, res) => {
 exports.addDietLog = async (req, res) => {
   const { title, foodName, calories, nutrition, mealTime, description } =
     req.body;
-  const image = req.file ? req.file.filename : null;
+    const imageUrl = req.file ? req.file.location : null; // S3에 저장된 파일의 URL
 
   try {
     const newLog = await DietLog.create({
@@ -46,7 +58,7 @@ exports.addDietLog = async (req, res) => {
       nutrition,
       mealTime: new Date(mealTime), // 문자열을 Date 객체로 변환
       description,
-      image,
+      image: imageUrl, // 이미지 URL을 MongoDB에 저장
     });
     console.log('New Diet Log Created:', newLog); // 디버깅 메시지 추가
     res.redirect('/home/diet-logs');
@@ -68,7 +80,7 @@ exports.editDietLog = async (req, res) => {
     description,
     redirectTo,
   } = req.body;
-  const image = req.file ? req.file.filename : null;
+  const imageUrl = req.file ? req.file.location : null; // S3에 저장된 파일의 URL
 
   try {
     const log = await DietLog.findById(id);
@@ -93,8 +105,8 @@ exports.editDietLog = async (req, res) => {
     log.nutrition = nutrition;
     log.mealTime = new Date(mealTime);
     log.description = description;
-    if (image) {
-      log.image = image;
+    if (imageUrl) {
+      log.image = imageUrl; // 새로운 이미지 URL로 업데이트
     }
 
     await log.save();
@@ -150,21 +162,44 @@ exports.deleteDietLog = async (req, res) => {
   const { id } = req.params;
 
   try {
+    // MongoDB에서 삭제할 로그 찾기
     const log = await DietLog.findById(id);
     if (!log) {
+      console.error('Diet log not found for deletion');
       return res.status(404).send('Diet log not found');
     }
 
-    // 관리자 또는 게시물 작성자만 삭제 가능
+    // 관리자 또는 작성자만 삭제 가능
     if (req.user.role !== 'admin' && log.username !== req.user.username) {
-      return res
-        .status(403)
-        .send('You do not have permission to delete this log');
+      return res.status(403).send('You do not have permission to delete this log');
     }
 
-    await log.deleteOne(); // MongoDB에서 해당 식단 일지 삭제
+    // S3에서 이미지 삭제
+    if (log.image) {
+      const s3Key = log.image.split('/').slice(-2).join('/'); // S3 객체 키 추출
+      const params = {
+        Bucket: 'fitconnect-images', // S3 버킷 이름
+        Key: s3Key,
+      };
 
-    // 이전 페이지가 마이페이지인지 확인
+      try {
+        await s3.deleteObject(params).promise();
+        console.log('Image deleted from S3:', log.image);
+      } catch (error) {
+        console.error('Error deleting image from S3:', error); // 디버깅 로그 추가
+      }
+    }
+
+    // MongoDB에서 로그 삭제
+    try {
+      await log.deleteOne();
+      console.log('Diet log deleted from database:', log._id);
+    } catch (error) {
+      console.error('Error deleting diet log from database:', error);
+      return res.status(500).send('Error deleting diet log');
+    }
+
+    // 이전 페이지 확인 후 리다이렉트
     const referer = req.headers.referer;
     if (referer && referer.includes('/home/mypage')) {
       return res.redirect('/home/mypage');
@@ -172,8 +207,8 @@ exports.deleteDietLog = async (req, res) => {
 
     res.redirect('/home/diet-logs');
   } catch (error) {
-    console.error('Error deleting diet log:', error);
-    res.status(500).send('Error deleting diet log');
+    console.error('Unexpected error during diet log deletion:', error);
+    res.status(500).send('Unexpected error during diet log deletion');
   }
 };
 
