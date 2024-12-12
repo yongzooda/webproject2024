@@ -206,7 +206,7 @@
         <p>Date: <%= log.date.toDateString() %></p>
         <p>Description: <%= log.description %></p>
         <% if (log.image) { %>
-        <img src="/uploads/<%= log.image %>" alt="Workout Image" />
+        <img src="<%= log.image %>" alt="Workout Image" />
         <% } %> <% if (user.role === 'admin' || user.username === log.username)
         { %>
         <div class="btn-group">
