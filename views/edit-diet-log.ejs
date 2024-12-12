@@ -209,7 +209,7 @@
       <label for="image">Image:</label>
       <% if (log.image) { %>
       <div>
-        <img src="/uploads/<%= log.image %>" alt="Current Diet Image" />
+        <img src="<%= log.image %>" alt="Current Diet Image" />
       </div>
       <% } %>
       <input type="file" id="image" name="image" />
